@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
     id ("com.google.devtools.ksp")
-    //id("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -90,6 +91,15 @@ dependencies {
     //Paging
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
+
+    implementation(libs.androidx.material.icons.extended.android)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material3.android)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose.android)
+
+    implementation(libs.logging.interceptor)
 
 
 
