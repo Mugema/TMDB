@@ -97,7 +97,7 @@ fun MovieGenreDto.toMGenre(index: Int):MGenreEntity{
 }
 
 fun NowPlayingMoviesDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
-    val list= listOf<MovieMGenreCrossRef>()
+    val list= mutableListOf<MovieMGenreCrossRef>()
     for (i in results[index].genre_ids){
         list.plus(
             MovieMGenreCrossRef(
@@ -111,9 +111,9 @@ fun NowPlayingMoviesDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRe
 }
 
 fun UpComingDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
-    val list= listOf<MovieMGenreCrossRef>()
+    val list= mutableListOf<MovieMGenreCrossRef>()
     for (i in results[index].genre_ids){
-        list.plus(
+        list.add(
             MovieMGenreCrossRef(
                 genreId = i,
                 id = results[index].id
@@ -125,9 +125,9 @@ fun UpComingDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
 }
 
 fun TopRatedDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
-    val list= listOf<MovieMGenreCrossRef>()
+    val list= mutableListOf<MovieMGenreCrossRef>()
     for (i in results[index].genre_ids){
-        list.plus(
+        list.add(
             MovieMGenreCrossRef(
                 genreId = i,
                 id = results[index].id
@@ -139,15 +139,14 @@ fun TopRatedDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
 }
 
 fun PopularMoviesDto.toMovieGenreCrossRef(index: Int):List<MovieMGenreCrossRef>{
-    val list= listOf<MovieMGenreCrossRef>()
+    val list= mutableListOf<MovieMGenreCrossRef>()
     for (i in results[index].genre_ids){
-        list.plus(
+        list.add(
             MovieMGenreCrossRef(
                 genreId = i,
                 id = results[index].id
             )
         )
     }
-
     return list
 }

@@ -9,8 +9,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -19,10 +17,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-
-    val client=OkHttpClient.Builder().addInterceptor(loggingInterceptor)
-        .build()
+//    val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+//
+//    val client= OkHttpClient.Builder().addInterceptor(loggingInterceptor)
+//        .build()
 
     @Provides
     @Singleton
@@ -30,7 +28,7 @@ object AppModule {
         return Retrofit.Builder()
             .baseUrl("https://api.themoviedb.org")
             .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
+            //.client(client)
             .build()
             .create(ApiService::class.java)
     }
