@@ -13,4 +13,10 @@ interface TMDBRepository {
     //suspend fun getGenreMovie(id:Int):List<String>
 
     suspend fun addMovieMGenreCrossRef()
+
+    suspend fun addMovieCategoryCrossRef(catId:Int,id:Int)
+
+    suspend fun addCategory()
+
+    suspend fun getMovieCategory(id: Int):List<Movies>
 }

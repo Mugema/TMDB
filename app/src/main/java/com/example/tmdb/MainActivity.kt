@@ -6,10 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tmdb.ui.DiscoverScreen
-import com.example.tmdb.ui.DiscoverScreenViewModel
+import com.example.tmdb.presentation.discoverScreen.DiscoverScreen
+import com.example.tmdb.presentation.discoverScreen.DiscoverScreenViewModel
+import com.example.tmdb.presentation.util.Loading
 import com.example.tmdb.ui.theme.TMDBTheme
-import com.example.tmdb.ui.util.Loading
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
         setContent {
-            val viewmodel:DiscoverScreenViewModel = viewModel()
+            val viewmodel: DiscoverScreenViewModel = viewModel()
             TMDBTheme {
                 val isLoading=viewmodel.isLoading.collectAsStateWithLifecycle()
                 if (isLoading.value) Loading()

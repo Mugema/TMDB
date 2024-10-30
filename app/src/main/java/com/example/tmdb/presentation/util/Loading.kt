@@ -1,4 +1,4 @@
-package com.example.tmdb.ui.util
+package com.example.tmdb.presentation.util
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

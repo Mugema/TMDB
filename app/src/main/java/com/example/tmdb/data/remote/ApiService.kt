@@ -34,5 +34,4 @@ interface ApiService{
 
 //    @GET("/3/genre/tv/list")
 //    suspend fun getTvShowGenres(@Query("api_Key") apiKey:String= API_KEY):
-    //66.254.114.41
 }

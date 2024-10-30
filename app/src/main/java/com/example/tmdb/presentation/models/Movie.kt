@@ -1,4 +1,4 @@
-package com.example.tmdb.ui.models
+package com.example.tmdb.presentation.models
 
 import com.example.tmdb.domain.Movies
 
@@ -11,7 +11,7 @@ data class Movie(
     val date:String
 )
 
-fun Movies.toMovie():Movie{
+fun Movies.toMovie(): Movie {
     return Movie(
         title= if (originalTitle==title) title
         else "$originalTitle($title)",

@@ -1,4 +1,4 @@
-package com.example.tmdb.ui.util
+package com.example.tmdb.presentation.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,7 +28,7 @@ fun GenreRow(genreList:List<String>){
                     .border(0.2.dp, Color.Black, RoundedCornerShape(100.dp))
             ) {
                 Text(item, color = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.align(Alignment.Center).padding(2.dp))
+                    modifier = Modifier.align(Alignment.Center).padding(8.dp))
             }
             Spacer(modifier = Modifier.width(4.dp))
         }

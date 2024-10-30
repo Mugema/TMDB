@@ -12,5 +12,5 @@ interface GenreDao {
     suspend fun addMovieMGenre(mGenre:MovieMGenreCrossRef)
 
     @Upsert
-    suspend fun addMovieCategory(movieCategory:MovieMGenreCrossRef)
+    suspend fun addMovieCategory(movieCategory:MovieCategoryCrossRef)
 }

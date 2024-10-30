@@ -252,6 +252,8 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+
+
 @Composable
 fun TMDBTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -271,7 +273,7 @@ fun TMDBTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = TMDBTypography,
         content = content
     )
 }

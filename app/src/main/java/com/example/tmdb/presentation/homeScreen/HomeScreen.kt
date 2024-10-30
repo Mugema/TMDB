@@ -1,4 +1,4 @@
-package com.example.tmdb.ui
+package com.example.tmdb.presentation.homeScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

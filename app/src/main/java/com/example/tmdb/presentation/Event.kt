@@ -1,4 +1,4 @@
-package com.example.tmdb.ui
+package com.example.tmdb.presentation
 
 enum class Event {
     VISIBLE,

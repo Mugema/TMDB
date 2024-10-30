@@ -1,6 +1,7 @@
 package com.example.tmdb.data.repository
 
-import android.util.Log
+import com.example.tmdb.data.local.Categories
+import com.example.tmdb.data.local.MovieCategoryCrossRef
 import com.example.tmdb.data.local.MovieTvDb
 import com.example.tmdb.data.mapper.toMGenre
 import com.example.tmdb.data.mapper.toMovieGenreCrossRef
@@ -48,6 +49,7 @@ class TMDBRepositoryImpl @Inject constructor(
             for(i in 0..<popularMovies.results.size){
                 popularMovies.toMoviesEntity(i).forEach{entry ->
                     db.getMovieDao().addMovie(entry.key)
+                    addMovieCategoryCrossRef(4,entry.key.id)
                 }
             }
         }
@@ -55,7 +57,7 @@ class TMDBRepositoryImpl @Inject constructor(
             for(i in 0..<upComingMovies.results.size){
                 upComingMovies.toMoviesEntity(i).forEach{entry ->
                     db.getMovieDao().addMovie(entry.key)
-
+                    addMovieCategoryCrossRef(2,entry.key.id)
                 }
             }
         }
@@ -63,7 +65,7 @@ class TMDBRepositoryImpl @Inject constructor(
             for(i in 0..<topRatedMovies.results.size){
                 topRatedMovies.toMoviesEntity(i).forEach{entry ->
                     db.getMovieDao().addMovie(entry.key)
-
+                    addMovieCategoryCrossRef(3,entry.key.id)
                 }
             }
         }
@@ -71,11 +73,10 @@ class TMDBRepositoryImpl @Inject constructor(
             for(i in 0..<nowPlayingMovies.results.size){
                 nowPlayingMovies.toMoviesEntity(i).forEach{entry ->
                     db.getMovieDao().addMovie(entry.key)
-
+                    addMovieCategoryCrossRef(1,entry.key.id)
                 }
             }
         }
-        Log.d("Movie added",popularMovies.toString())
     }
 
     override suspend fun getMovie(): List<Movies> {
@@ -89,11 +90,13 @@ class TMDBRepositoryImpl @Inject constructor(
         return list
     }
 
-    private fun getGenre(id:Int):List<String>{
+    private suspend fun getGenre(id:Int):List<String>{
         val genreList= mutableListOf<String>()
-        db.getMovieDao().getGenreForMovie(id).forEach { genreForMovie ->
-            genreForMovie.genreList.forEach{genre->
-                genreList.add(genre.genre)
+        withContext(Dispatchers.IO){
+            db.getMovieDao().getGenreForMovie(id).forEach { genreForMovie ->
+                genreForMovie.genreList.forEach{genre->
+                    genreList.add(genre.genre)
+                }
             }
         }
         return genreList
@@ -129,5 +132,29 @@ class TMDBRepositoryImpl @Inject constructor(
             }
         }
 
+    }
+
+    override suspend fun addMovieCategoryCrossRef(catId:Int,id:Int) {
+        db.getGenreDao().addMovieCategory(MovieCategoryCrossRef(catId,id))
+    }
+
+    override suspend fun addCategory() {
+        db.getMovieDao().addCategory(Categories(1,"Now Playing"))
+        db.getMovieDao().addCategory(Categories(2,"Up Coming"))
+        db.getMovieDao().addCategory(Categories(3,"Top Rated"))
+        db.getMovieDao().addCategory(Categories(4,"Popular"))
+    }
+
+    override suspend fun getMovieCategory(id:Int):List<Movies> {
+        val movies= mutableListOf<Movies>()
+        withContext(Dispatchers.IO){
+            db.getMovieDao().getMoviesUnderCategory(id).forEach {item->
+                item.movie.forEach{
+                    movies.add(it.toMovies(getGenre(it.id)))
+                }
+            }
+        }
+
+        return movies
     }
 }

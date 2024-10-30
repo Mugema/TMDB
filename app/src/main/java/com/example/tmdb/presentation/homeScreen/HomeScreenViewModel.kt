@@ -1,4 +1,4 @@
-package com.example.tmdb.ui
+package com.example.tmdb.presentation.homeScreen
 
 import androidx.lifecycle.ViewModel
 import com.example.tmdb.data.repository.TMDBRepositoryImpl
