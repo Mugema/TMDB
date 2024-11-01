@@ -4,6 +4,7 @@ plugins {
 
     id ("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -101,6 +102,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose.android)
 
     implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.androidx.navigation.compose.v100)
 
 
 

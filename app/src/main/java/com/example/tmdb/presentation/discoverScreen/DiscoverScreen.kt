@@ -95,9 +95,7 @@ fun DiscoverScreen(modifier: Modifier=Modifier,viewModel: DiscoverScreenViewMode
                         Overview(Modifier.background(Color.Transparent),movie = popularMovie)
                     }
                 }
-
             }
-
         }
     }
 }
@@ -109,15 +107,14 @@ fun Discover(modifier: Modifier=Modifier,viewModel: DiscoverScreenViewModel){
         FilterChipRow(viewModel)
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(data.value){
-                    movie ->  Discover(viewModel, movie)
-                Actions(viewModel)
+                    movie ->  MovieItem(viewModel, movie)
             }
         }
     }
 }
 
 @Composable
-fun Discover(viewModel: DiscoverScreenViewModel, movie: Movie){
+fun MovieItem(viewModel: DiscoverScreenViewModel, movie: Movie){
     val iconState=viewModel.iconState.collectAsStateWithLifecycle()
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -143,6 +140,7 @@ fun Discover(viewModel: DiscoverScreenViewModel, movie: Movie){
             }
 
         }
+        Actions(viewModel,movie.id)
 
     }
 }

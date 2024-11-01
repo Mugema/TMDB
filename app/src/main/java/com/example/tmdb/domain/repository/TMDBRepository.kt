@@ -19,4 +19,8 @@ interface TMDBRepository {
     suspend fun addCategory()
 
     suspend fun getMovieCategory(id: Int):List<Movies>
+
+    suspend fun bookMark(bookMark:Boolean,id: Int)
+
+    suspend fun getBookMarked():List<Movies>
 }

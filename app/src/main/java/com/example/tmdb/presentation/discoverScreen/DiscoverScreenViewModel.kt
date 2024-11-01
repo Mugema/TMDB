@@ -11,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,34 +27,23 @@ class DiscoverScreenViewModel @Inject constructor(
     private var _iconState= MutableStateFlow(IconState())
     val iconState=_iconState.asStateFlow()
 
-    private var _isLoading = MutableStateFlow(true)
-    var isLoading=_isLoading.asStateFlow()
-
     private var _movies= MutableStateFlow(mutableListOf<Movie>())
     val movie=_movies.asStateFlow()
 
-     var unCategorisedMovies= mutableListOf<Movie>()
+    var unCategorisedMovies= mutableListOf<Movie>()
 
-     private var popularMovies= mutableListOf<Movie>()
+    private var popularMovies= mutableListOf<Movie>()
 
-     private var nowPlayingMovies=mutableListOf<Movie>()
+    private var nowPlayingMovies=mutableListOf<Movie>()
 
-     private var upComingMovies=mutableListOf<Movie>()
+    private var upComingMovies=mutableListOf<Movie>()
 
-     private var topRatedMoves= mutableListOf<Movie>()
+    private var topRatedMoves= mutableListOf<Movie>()
 
     init {
         viewModelScope.launch {
-            coroutineScope {
-                repository.addCategory()
-                repository.addMovieGenre()
-                repository.addMovie()
-                repository.addMovieMGenreCrossRef()
-
-                delay(200L)
-                _movies.value=getMovieData().toMutableList()
-            }
-            _isLoading.value=false
+            delay(200L)
+            _movies.value=getMovieData().toMutableList()
         }
     }
     fun onEvent(event: Event){
@@ -131,6 +119,12 @@ class DiscoverScreenViewModel @Inject constructor(
             }
         }
         return unCategorisedMovies
+    }
+
+    fun onBookmarkClick(id: Int){
+        viewModelScope.launch {
+            repository.bookMark(_iconState.value.addBookmark,id)
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.tmdb.domain
 
 data class Movies(
+    val id:Int,
     val backdropPath: String,
     val originalLanguage: String,
     val originalTitle: String,
@@ -11,4 +12,5 @@ data class Movies(
     val video: Boolean,
     val voteAverage: Double,
     val genre:List<String>,
+    val bookmark:Boolean
 )

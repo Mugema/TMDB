@@ -17,7 +17,7 @@ import com.example.tmdb.presentation.Event
 import com.example.tmdb.presentation.discoverScreen.DiscoverScreenViewModel
 
 @Composable
-fun Actions(viewModel: DiscoverScreenViewModel){
+fun Actions(viewModel: DiscoverScreenViewModel,id:Int){
     val iconState=viewModel.iconState.collectAsStateWithLifecycle()
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -32,7 +32,8 @@ fun Actions(viewModel: DiscoverScreenViewModel){
             )
         }
         IconButton(
-            onClick = {viewModel.onEvent(Event.BOOKMARK)},
+            onClick = {viewModel.onEvent(Event.BOOKMARK)
+                      viewModel.onBookmarkClick(id)},
             modifier = Modifier.align(Alignment.BottomEnd)) {
             Icon(
                 imageVector = if(iconState.value.addBookmark) Icons.Default.Bookmark

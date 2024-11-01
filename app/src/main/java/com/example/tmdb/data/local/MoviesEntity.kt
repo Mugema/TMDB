@@ -14,5 +14,6 @@ data class MoviesEntity(
     val releaseDate: String,
     val title: String,
     val video: Boolean,
-    val voteAverage: Double
+    val voteAverage: Double,
+    val bookMark:Boolean=false
 )

@@ -15,5 +15,7 @@ fun MoviesEntity.toMovies(genre:List<String>):Movies{
         video=video,
         voteAverage=voteAverage,
         genre=genre,
+        bookmark = bookMark,
+        id=id
     )
 }

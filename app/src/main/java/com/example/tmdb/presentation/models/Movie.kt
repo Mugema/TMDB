@@ -8,7 +8,9 @@ data class Movie(
     val image:String,
     val genre:List<String>,
     val rating:Double,
-    val date:String
+    val date:String,
+    val bookmark:Boolean=false,
+    val id:Int
 )
 
 fun Movies.toMovie(): Movie {
@@ -19,6 +21,8 @@ fun Movies.toMovie(): Movie {
         image = posterPath,
         overview = overview,
         rating = voteAverage,
-        date = releaseDate
+        date = releaseDate,
+        bookmark = bookmark,
+        id=id
     )
 }

@@ -1,5 +1,6 @@
 package com.example.tmdb.data.repository
 
+import android.util.Log
 import com.example.tmdb.data.local.Categories
 import com.example.tmdb.data.local.MovieCategoryCrossRef
 import com.example.tmdb.data.local.MovieTvDb
@@ -135,14 +136,20 @@ class TMDBRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addMovieCategoryCrossRef(catId:Int,id:Int) {
-        db.getGenreDao().addMovieCategory(MovieCategoryCrossRef(catId,id))
+        withContext(Dispatchers.IO){
+            db.getGenreDao().addMovieCategory(MovieCategoryCrossRef(catId,id))
+        }
+
     }
 
     override suspend fun addCategory() {
-        db.getMovieDao().addCategory(Categories(1,"Now Playing"))
-        db.getMovieDao().addCategory(Categories(2,"Up Coming"))
-        db.getMovieDao().addCategory(Categories(3,"Top Rated"))
-        db.getMovieDao().addCategory(Categories(4,"Popular"))
+        withContext(Dispatchers.IO){
+            db.getMovieDao().addCategory(Categories(1,"Now Playing"))
+            db.getMovieDao().addCategory(Categories(2,"Up Coming"))
+            db.getMovieDao().addCategory(Categories(3,"Top Rated"))
+            db.getMovieDao().addCategory(Categories(4,"Popular"))
+
+        }
     }
 
     override suspend fun getMovieCategory(id:Int):List<Movies> {
@@ -156,5 +163,23 @@ class TMDBRepositoryImpl @Inject constructor(
         }
 
         return movies
+    }
+
+    override suspend fun bookMark(bookMark: Boolean,id:Int) {
+        withContext(Dispatchers.IO){
+            db.getMovieDao().bookMarking(bookMark,id)
+        }
+    }
+
+    override suspend fun getBookMarked(): List<Movies> {
+        val list = mutableListOf<Movies>()
+        withContext(Dispatchers.IO){
+            db.getMovieDao().getBookMarked().forEach { item ->
+                val movie=item.movie.toMovies(getGenre(item.movie.id))
+                list.add(movie)
+            }
+        }
+        Log.d("bookmarked",list.toString())
+        return list
     }
 }
