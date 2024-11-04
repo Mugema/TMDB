@@ -124,8 +124,8 @@ fun MovieItem(viewModel: DiscoverScreenViewModel, movie: Movie){
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth()
                         .blur(
-                            radiusX = 300.dp,
-                            radiusY = 150.dp,
+                            radiusX = 100.dp,
+                            radiusY = 50.dp,
                             edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(4.dp))
                         ),
                     contentScale = ContentScale.FillWidth)

@@ -31,6 +31,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.tmdb.presentation.discoverScreen.DiscoverScreenViewModel
 import com.example.tmdb.presentation.homeScreen.HomeScreenViewModel
@@ -53,6 +57,7 @@ class MainActivity : ComponentActivity() {
                 val homeScreenViewModel: HomeScreenViewModel = viewModel()
                 val discoverScreenViewModel: DiscoverScreenViewModel = viewModel()
                 val watchLaterViewModel: WatchLaterViewModel = viewModel()
+
                 val isLoading=viewmodel.isLoading.collectAsStateWithLifecycle()
                 val navController= rememberNavController()
 
@@ -67,35 +72,32 @@ class MainActivity : ComponentActivity() {
         }
 }
 
+//@SuppressLint("RestrictedApi")
 @Composable
 fun BottomBar(modifier: Modifier = Modifier, navController: NavController){
     val barItems = listOf(
-        BarItem("Home", Icons.Default.Home, Icons.Outlined.Home,false),
-        BarItem("Discover", Icons.Default.Explore, Icons.Outlined.Explore,false),
-        BarItem("List", Icons.Default.Task, Icons.Outlined.Task,true),
-        BarItem("Settings", Icons.Default.Settings, Icons.Outlined.Settings,true,9)
+        BarItem("Home", Icons.Default.Home, Icons.Outlined.Home,false, route = Routes.Home),
+        BarItem("Discover", Icons.Default.Explore, Icons.Outlined.Explore,false,Routes.Discover),
+        BarItem("List", Icons.Default.Task, Icons.Outlined.Task,true,Routes.WatchLater),
+        BarItem("Settings", Icons.Default.Settings, Icons.Outlined.Settings,true,Routes.Settings,9,)
     )
+    val backStack by navController.currentBackStackEntryAsState()
+    val currentDestination=backStack?.destination
+
     var selected by remember{ mutableIntStateOf(0) }
 
     NavigationBar(modifier=modifier) { barItems.forEachIndexed { index, barItem ->
         NavigationBarItem(
-            selected = index==selected,
+            selected = currentDestination?.hierarchy?.any { it.hasRoute(barItem.route::class) }==true,
             onClick = {
-                selected=index
-                when(barItem.label){
-                    "Discover"->{
-                        navController.navigate(Routes.Discover)
-                        selected=1
+                navController.navigate(barItem.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
                     }
-                    "Home"->{
-                        navController.navigate(Routes.Home)
-                        selected=0
-                    }
-                    "List"->{
-                        navController.navigate(Routes.WatchLater)
-                        selected=2
-                    }
-                } },
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             icon = {
                 BadgedBox(
                     badge = {
@@ -114,11 +116,19 @@ fun BottomBar(modifier: Modifier = Modifier, navController: NavController){
     }
 }
 
-data class BarItem(
+data class BarItem<T : Any>(
     val label:String,
     val selectedIcon: ImageVector,
     val unSelectedIcon: ImageVector,
     val badge:Boolean,
+    val route: T,
     val badgeCount:Int=0,
 )
+
+data class TopLevelRoute<T : Any>(
+    val name: String,
+
+    val icon: ImageVector
+)
+
 

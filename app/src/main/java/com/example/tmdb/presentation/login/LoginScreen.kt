@@ -37,6 +37,7 @@ fun LoginScreen(modifier: Modifier=Modifier,toSignUp:()->Unit={},longInClick:()-
         Image(painter = painterResource(R.drawable.logo), contentDescription = null,
             modifier = Modifier.padding(start = 4.dp)
                 .align(Alignment.CenterHorizontally)
+
         )
         OutlinedTextField(
             value = "",
