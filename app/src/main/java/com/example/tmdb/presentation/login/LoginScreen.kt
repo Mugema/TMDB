@@ -101,7 +101,7 @@ fun LoginScreen(modifier: Modifier=Modifier,toSignUp:()->Unit={},longInClick:()-
 
 @Composable
 @PreviewLightDark
-fun loginScreenPreview(){
+fun LoginScreenPreview(){
     TMDBTheme {
         LoginScreen(){}
     }

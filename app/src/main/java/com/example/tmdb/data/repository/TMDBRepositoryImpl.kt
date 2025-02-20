@@ -16,13 +16,19 @@ import com.example.tmdb.data.remote.TopRatedDto
 import com.example.tmdb.data.remote.UpComingDto
 import com.example.tmdb.domain.Movies
 import com.example.tmdb.domain.repository.TMDBRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TMDBRepositoryImpl @Inject constructor(
     private val api:ApiService,
     private val db:MovieTvDb,
+    private val ioDispatcher:CoroutineDispatcher
 ):TMDBRepository {
     private lateinit var popularMovies:PopularMoviesDto
     private lateinit var upComingMovies:UpComingDto
@@ -80,29 +86,6 @@ class TMDBRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovie(): List<Movies> {
-        val list = mutableListOf<Movies>()
-        withContext(Dispatchers.IO){
-            db.getMovieDao().getMovies().forEach { item ->
-                val movie=item.movie.toMovies(getGenre(item.movie.id))
-                list.add(movie)
-            }
-        }
-        return list
-    }
-
-    private suspend fun getGenre(id:Int):List<String>{
-        val genreList= mutableListOf<String>()
-        withContext(Dispatchers.IO){
-            db.getMovieDao().getGenreForMovie(id).forEach { genreForMovie ->
-                genreForMovie.genreList.forEach{genre->
-                    genreList.add(genre.genre)
-                }
-            }
-        }
-        return genreList
-    }
-
     override suspend fun addMovieMGenreCrossRef() {
         withContext(Dispatchers.Default){
             for(i in 0..<popularMovies.results.size){
@@ -152,17 +135,40 @@ class TMDBRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovieCategory(id:Int):List<Movies> {
-        val movies= mutableListOf<Movies>()
+    override suspend fun getMovie(): Flow<Movies> {
+        return flow {
+            val list = mutableListOf<Movies>()
+            db.getMovieDao().getMovies().map {item->
+                item.forEach { items ->
+                    val movie=items.movie.toMovies(getGenre(items.movie.id),getMovieCategory(items.movie.id))
+                    list.add(movie)
+                }
+            }
+            list.forEach{emit(it)}
+        }.flowOn(ioDispatcher)
+
+    }
+
+    private suspend fun getGenre(id:Int):List<String>{
+        val genreList= mutableListOf<String>()
         withContext(Dispatchers.IO){
-            db.getMovieDao().getMoviesUnderCategory(id).forEach {item->
-                item.movie.forEach{
-                    movies.add(it.toMovies(getGenre(it.id)))
+            db.getMovieDao().getGenreForMovie(id).forEach { genreForMovie ->
+                genreForMovie.genreList.forEach{genre->
+                    genreList.add(genre.genre)
                 }
             }
         }
+        return genreList
+    }
 
-        return movies
+    override suspend fun getMovieCategory(id:Int):List<Int> {
+        val category= mutableListOf<Int>()
+        withContext(Dispatchers.IO){
+            db.getMovieDao().getMoviesUnderCategory(id).forEach {item->
+                category.add(item.categoryId)
+                }
+            }
+        return category
     }
 
     override suspend fun bookMark(bookMark: Boolean,id:Int) {

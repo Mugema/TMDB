@@ -1,6 +1,7 @@
 package com.example.tmdb.domain.repository
 
 import com.example.tmdb.domain.Movies
+import kotlinx.coroutines.flow.Flow
 
 interface TMDBRepository {
 
@@ -8,7 +9,7 @@ interface TMDBRepository {
 
     suspend fun addMovie()
 
-    suspend fun getMovie():List<Movies>
+    suspend fun getMovie():Flow<Movies>
 
     //suspend fun getGenreMovie(id:Int):List<String>
 
@@ -18,7 +19,7 @@ interface TMDBRepository {
 
     suspend fun addCategory()
 
-    suspend fun getMovieCategory(id: Int):List<Movies>
+    suspend fun getMovieCategory(id: Int):List<Int>
 
     suspend fun bookMark(bookMark:Boolean,id: Int)
 

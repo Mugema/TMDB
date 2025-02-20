@@ -1,5 +1,6 @@
 package com.example.tmdb.presentation.discoverScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tmdb.data.repository.TMDBRepositoryImpl
@@ -13,7 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,20 +35,32 @@ class DiscoverScreenViewModel @Inject constructor(
     private var _movies= MutableStateFlow(mutableListOf<Movie>())
     val movie=_movies.asStateFlow()
 
-    var unCategorisedMovies= mutableListOf<Movie>()
+    private var categorizedMovies= mutableListOf<Movie>()
 
-    private var popularMovies= mutableListOf<Movie>()
+    var searchValue=""
 
-    private var nowPlayingMovies=mutableListOf<Movie>()
+    private val _discoverScreenState = MutableStateFlow(DiscoverScreenState())
+    val discoverScreenState = _discoverScreenState.onStart {  }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            DiscoverScreenState()
+        )
 
-    private var upComingMovies=mutableListOf<Movie>()
+    fun onValueChange(){
 
-    private var topRatedMoves= mutableListOf<Movie>()
+    }
 
     init {
         viewModelScope.launch {
+            val ll= mutableListOf<Movie>()
             delay(200L)
-            _movies.value=getMovieData().toMutableList()
+            repository.getMovie().collect{
+                ll.add(it.toMovie())
+                Log.d("discoverViewModel",ll.toString())
+                Log.d("discoverViewModel it",it.toString())
+                _movies.value=ll
+            }
         }
     }
     fun onEvent(event: Event){
@@ -62,63 +79,36 @@ class DiscoverScreenViewModel @Inject constructor(
             "nowPlaying"->{
                 _filterChipState.value=_filterChipState.value.copy(
                     nowPlaying = !_filterChipState.value.nowPlaying)
-                moviesFilter()
+                moviesFilter(1)
             }
             "topRated"->{
                 _filterChipState.value=_filterChipState.value.copy(
                     topRated = !_filterChipState.value.topRated)
-                moviesFilter()
+                moviesFilter(3)
             }
             "upComing"->{
                 _filterChipState.value=_filterChipState.value.copy(
                     upComing = !_filterChipState.value.upComing)
-                moviesFilter()
+                moviesFilter(2)
             }
             "popular"->{
                 _filterChipState.value=_filterChipState.value.copy(
                     popular = !_filterChipState.value.popular)
-                moviesFilter()
+                moviesFilter(4)
 
             }
         }
     }
 
-    private fun moviesFilter(){
-        _movies.value= mutableListOf()
-        if (_filterChipState.value.popular) _movies.value.addAll(popularMovies)
-        if (_filterChipState.value.topRated) _movies.value.addAll(topRatedMoves)
-        if (_filterChipState.value.nowPlaying) _movies.value.addAll(nowPlayingMovies)
-        if (_filterChipState.value.upComing) _movies.value.addAll(upComingMovies)
-    }
-
-    private fun getMoviesUnderCategory(id:Int):Deferred<MutableList<Movie>>{
-        var popular: List<Movies>
-        val popularList = mutableListOf<Movie>()
-        return viewModelScope.async {
-            popular=repository.getMovieCategory(id)
-            popular.forEach {
-                    movies -> popularList.add(movies.toMovie())
+    private fun moviesFilter(category:Int){
+        viewModelScope.launch {
+            repository.getMovie().filter {movie->
+                category in movie.category
             }
-            popularList
+                .collect{
+                    movie-> categorizedMovies.add(movie.toMovie())
+                }
         }
-    }
-
-    private fun getMovieData():List<Movie>{
-        viewModelScope.launch(Dispatchers.Default) {
-            nowPlayingMovies=getMoviesUnderCategory(1).await().also {
-                unCategorisedMovies.addAll(it)
-            }
-            upComingMovies=getMoviesUnderCategory(2).await().also {
-                unCategorisedMovies.addAll(it)
-            }
-            topRatedMoves=getMoviesUnderCategory(3).await().also {
-                unCategorisedMovies.addAll(it)
-            }
-            popularMovies=getMoviesUnderCategory(4).await().also {
-                unCategorisedMovies.addAll(it)
-            }
-        }
-        return unCategorisedMovies
     }
 
     fun onBookmarkClick(id: Int){
@@ -128,6 +118,14 @@ class DiscoverScreenViewModel @Inject constructor(
     }
 
 }
+
+data class DiscoverScreenState(
+    val searchQuery:String="",
+    //val iconState: IconState=IconState(),
+    val filterChipState: FilterChipState=FilterChipState(),
+    val movies: List<Movie> = emptyList()
+)
+
 
 data class IconState(
     val showOverview:Boolean=false,

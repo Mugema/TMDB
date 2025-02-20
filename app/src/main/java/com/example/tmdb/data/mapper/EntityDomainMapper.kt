@@ -3,7 +3,7 @@ package com.example.tmdb.data.mapper
 import com.example.tmdb.data.local.MoviesEntity
 import com.example.tmdb.domain.Movies
 
-fun MoviesEntity.toMovies(genre:List<String>):Movies{
+fun MoviesEntity.toMovies(genre:List<String>,category: List<Int> = listOf()):Movies{
     return Movies(
         backdropPath=backdropPath,
         originalLanguage=originalLanguage,
@@ -16,6 +16,7 @@ fun MoviesEntity.toMovies(genre:List<String>):Movies{
         voteAverage=voteAverage,
         genre=genre,
         bookmark = bookMark,
-        id=id
+        id=id,
+        category = category
     )
 }

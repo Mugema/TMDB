@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
                 val navController= rememberNavController()
 
                 if (isLoading.value) Loading()
+
                 else {
                     Scaffold(bottomBar = { BottomAppBar(){ BottomBar(navController = navController) } }) {
                         Navigation(homeScreenViewModel,discoverScreenViewModel,watchLaterViewModel, navController = navController) }
@@ -72,7 +73,6 @@ class MainActivity : ComponentActivity() {
         }
 }
 
-//@SuppressLint("RestrictedApi")
 @Composable
 fun BottomBar(modifier: Modifier = Modifier, navController: NavController){
     val barItems = listOf(
@@ -127,7 +127,6 @@ data class BarItem<T : Any>(
 
 data class TopLevelRoute<T : Any>(
     val name: String,
-
     val icon: ImageVector
 )
 

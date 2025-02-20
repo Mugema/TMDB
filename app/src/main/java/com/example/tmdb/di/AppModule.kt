@@ -9,6 +9,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -17,18 +19,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-//    val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-//
-//    val client= OkHttpClient.Builder().addInterceptor(loggingInterceptor)
-//        .build()
-
     @Provides
     @Singleton
     fun provideApi():ApiService{
         return Retrofit.Builder()
             .baseUrl("https://api.themoviedb.org")
             .addConverterFactory(GsonConverterFactory.create())
-            //.client(client)
             .build()
             .create(ApiService::class.java)
     }
@@ -40,6 +36,12 @@ object AppModule {
             Room.databaseBuilder(context,MovieTvDb::class.java,"Tmdb.db")
                 .build()
         }
+    }
+
+    @Singleton
+    @Provides
+    fun providesIODispatcher():CoroutineDispatcher{
+        return Dispatchers.IO
     }
 }
 

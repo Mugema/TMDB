@@ -12,5 +12,6 @@ data class Movies(
     val video: Boolean,
     val voteAverage: Double,
     val genre:List<String>,
-    val bookmark:Boolean
+    val bookmark:Boolean,
+    val category:List<Int>
 )

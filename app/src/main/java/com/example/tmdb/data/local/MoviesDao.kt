@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MoviesDao {
@@ -24,13 +25,13 @@ interface MoviesDao {
     fun getGenreForMovie(id:Int): List<GenreForMovie>
 
     @Query("Select * FROM MoviesEntity")
-    fun getMovies():List<GenreForMovie>
+    fun getMovies(): Flow<List<GenreForMovie>>
 
     @Upsert
     suspend fun addCategory(category:Categories)
 
     @Transaction
-    @Query("Select * From Categories where categoryId=:id")
-    fun  getMoviesUnderCategory(id: Int):List<CategoryMovie>
+    @Query("Select * From MovieCategoryCrossRef where id =:id")
+    fun  getMoviesUnderCategory(id: Int):List<MovieCategoryCrossRef>
 
 }

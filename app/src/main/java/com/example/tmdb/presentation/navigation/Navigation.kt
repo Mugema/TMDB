@@ -1,6 +1,7 @@
 package com.example.tmdb.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -65,7 +66,10 @@ fun NavGraphBuilder.landing(
             HomeScreen(viewModel = homeScreenViewModel)
         }
         composable<Routes.Discover> {
-            DiscoverScreen(viewModel = discoverScreenViewModel)
+            val discoverScreenState = discoverScreenViewModel.discoverScreenState.collectAsStateWithLifecycle()
+            DiscoverScreen(
+                discoverScreenState = discoverScreenState.value
+            ){}
         }
         composable<Routes.WatchLater> {
             watchLaterViewModel.getMovieData()
