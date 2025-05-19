@@ -20,9 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.tmdb.presentation.discoverScreen.Overview
+import com.example.tmdb.presentation.discoverScreen.components.Overview
 import com.example.tmdb.presentation.watchLaterScreen.components.WatchItem
+
+@Composable
+fun WatchLaterScreenRoot(modifier: Modifier = Modifier) {
+    WatchLaterScreen( viewModel = hiltViewModel() )
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +54,8 @@ fun WatchLaterScreen (viewModel: WatchLaterViewModel) {
                     Column (
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .clickable { viewModel.onExpandedChange() }
                     ){
                         viewModel.currentMovie?.let { Overview(modifier = Modifier, movie = it) }
@@ -58,7 +67,6 @@ fun WatchLaterScreen (viewModel: WatchLaterViewModel) {
                     WatchItem(movie,viewModel)
                 }
             }
-
         }
     }
 }

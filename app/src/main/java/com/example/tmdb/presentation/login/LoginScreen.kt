@@ -28,7 +28,11 @@ import com.example.tmdb.R
 import com.example.tmdb.ui.theme.TMDBTheme
 
 @Composable
-fun LoginScreen(modifier: Modifier=Modifier,toSignUp:()->Unit={},longInClick:()->Unit){
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    toSignUp: () -> Unit = {},
+    logInClick: () -> Unit,
+){
     Column(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
@@ -60,7 +64,7 @@ fun LoginScreen(modifier: Modifier=Modifier,toSignUp:()->Unit={},longInClick:()-
             TextButton(onClick = toSignUp) { Text("Sign Up")}
         }
         Button(
-            onClick = {longInClick()},
+            onClick = {logInClick()},
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Login")
@@ -103,6 +107,6 @@ fun LoginScreen(modifier: Modifier=Modifier,toSignUp:()->Unit={},longInClick:()-
 @PreviewLightDark
 fun LoginScreenPreview(){
     TMDBTheme {
-        LoginScreen(){}
+        LoginScreen(logInClick = {})
     }
 }

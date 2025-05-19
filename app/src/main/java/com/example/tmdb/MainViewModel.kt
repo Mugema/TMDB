@@ -6,7 +6,10 @@ import com.example.tmdb.data.repository.TMDBRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,20 +17,23 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor (
     private val repository:TMDBRepositoryImpl
 ):ViewModel(){
-    private var _isLoading = MutableStateFlow(true)
-    var isLoading=_isLoading.asStateFlow()
+    private var _state = MutableStateFlow(UiState())
+    var state=_state.onStart { loadData() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            UiState()
+        )
 
-    init {
+
+    private fun loadData(){
         viewModelScope.launch {
-            coroutineScope {
-                repository.addCategory()
-                repository.addMovieGenre()
-                repository.addMovie()
-                repository.addMovieMGenreCrossRef()
-            }
-            _isLoading.value=false
+            _state.update { _state.value.copy(isLoading = false) }
         }
+
     }
-
-
 }
+
+data class UiState(
+    val isLoading:Boolean = true
+)

@@ -1,36 +1,35 @@
 package com.example.tmdb.data.remote
 
-import retrofit2.http.GET
-import retrofit2.http.Query
+import com.example.tmdb.data.remote.models.MoviesDto
+import com.example.tmdb.domain.Category
+import com.example.tmdb.domain.DataErrors
+import com.example.tmdb.domain.Result
 
-private const val API_KEY="a2f76f3a9afec8527beb8f1495660ad4"
 interface ApiService{
-    @GET("/3/movie/now_playing")
-    suspend fun getNowPlayingMovies(
-        @Query("api_key") apiKey:String= API_KEY,
-        @Query("page") page:Int=1
-    ):NowPlayingMoviesDto
 
-    @GET("/3/movie/top_rated")
-    suspend fun getTopRatedMovies(
-        @Query("api_key") apiKey:String= API_KEY,
-        @Query("page") page:Int=1
-    ):TopRatedDto
+    companion object {
+         const val API_KEY="a2f76f3a9afec8527beb8f1495660ad4"
+         const val BASE_URL = "https://api.themoviedb.org"
 
-    @GET("/3/movie/upcoming")
-    suspend fun getUpComingMovies(
-        @Query("api_key") apiKey:String= API_KEY,
-        @Query("page") page:Int=1
-    ):UpComingDto
+        const val NOW_PLAYING = "/3/movie/now_playing"
+        const val UPCOMING = "/3/movie/upcoming"
+        const val TOP_RATED =  "/3/movie/top_rated"
+        const val POPULAR  = "/3/movie/popular"
+    }
 
-    @GET("/3/movie/popular")
-    suspend fun getPopularMovies(
-        @Query("api_key") apiKey:String= API_KEY,
-        @Query("page") page:Int=1
-    ):PopularMoviesDto
+    suspend fun getMovies(category: Category,page:Int=1): Result<MoviesDto, DataErrors.RemoteError>
 
-    @GET("/3/genre/movie/list")
-    suspend fun getMovieGenres(@Query("api_key") apiKey:String= API_KEY):MovieGenreDto
+
+//    @GET("/3/genre/movie/list")
+//    suspend fun getMovieGenres(): MovieGenreDto
+
+//    @GET("/3/search/movie")
+//    suspend fun searchMovie()
+
+//    @GET("/3/search/tv")
+//    suspend fun searchTV()
+
+
 
 //    @GET("/3/genre/tv/list")
 //    suspend fun getTvShowGenres(@Query("api_Key") apiKey:String= API_KEY):

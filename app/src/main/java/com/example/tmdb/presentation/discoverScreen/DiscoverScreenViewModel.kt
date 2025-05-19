@@ -4,21 +4,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tmdb.data.repository.TMDBRepositoryImpl
-import com.example.tmdb.domain.Movies
-import com.example.tmdb.presentation.Event
+import com.example.tmdb.domain.Category
+import com.example.tmdb.domain.resolveCategory
 import com.example.tmdb.presentation.models.Movie
 import com.example.tmdb.presentation.models.toMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,106 +22,160 @@ import javax.inject.Inject
 class DiscoverScreenViewModel @Inject constructor(
     private val repository:TMDBRepositoryImpl
 ):ViewModel() {
-    private var _filterChipState= MutableStateFlow(FilterChipState())
-    val filterChipState=_filterChipState.asStateFlow()
-
-    private var _iconState= MutableStateFlow(IconState())
-    val iconState=_iconState.asStateFlow()
-
-    private var _movies= MutableStateFlow(mutableListOf<Movie>())
-    val movie=_movies.asStateFlow()
-
-    private var categorizedMovies= mutableListOf<Movie>()
-
-    var searchValue=""
 
     private val _discoverScreenState = MutableStateFlow(DiscoverScreenState())
-    val discoverScreenState = _discoverScreenState.onStart {  }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            DiscoverScreenState()
-        )
+    val discoverScreenState = _discoverScreenState.onStart {
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        DiscoverScreenState()
+    )
 
-    fun onValueChange(){
+    private val _filterChipState = MutableStateFlow( FilterChipState() )
+    val filterChipState = _filterChipState.asStateFlow()
 
-    }
+    private var originalMovieData = mutableListOf<Movie>()
+
+
 
     init {
-        viewModelScope.launch {
-            val ll= mutableListOf<Movie>()
-            delay(200L)
-            repository.getMovie().collect{
-                ll.add(it.toMovie())
-                Log.d("discoverViewModel",ll.toString())
-                Log.d("discoverViewModel it",it.toString())
-                _movies.value=ll
-            }
-        }
-    }
-    fun onEvent(event: Event){
-        when(event){
-            Event.VISIBLE ->{
-                _iconState.value=_iconState.value.copy(showOverview = !_iconState.value.showOverview)
-            }
-            Event.BOOKMARK ->{
-                _iconState.value=_iconState.value.copy(addBookmark = !_iconState.value.addBookmark)
-            }
-        }
+        loadData()
     }
 
-    fun onChipStateChange(chip:String){
-        when(chip){
-            "nowPlaying"->{
-                _filterChipState.value=_filterChipState.value.copy(
-                    nowPlaying = !_filterChipState.value.nowPlaying)
-                moviesFilter(1)
-            }
-            "topRated"->{
-                _filterChipState.value=_filterChipState.value.copy(
-                    topRated = !_filterChipState.value.topRated)
-                moviesFilter(3)
-            }
-            "upComing"->{
-                _filterChipState.value=_filterChipState.value.copy(
-                    upComing = !_filterChipState.value.upComing)
-                moviesFilter(2)
-            }
-            "popular"->{
-                _filterChipState.value=_filterChipState.value.copy(
-                    popular = !_filterChipState.value.popular)
-                moviesFilter(4)
 
-            }
-        }
-    }
-
-    private fun moviesFilter(category:Int){
-        viewModelScope.launch {
-            repository.getMovie().filter {movie->
-                category in movie.category
-            }
-                .collect{
-                    movie-> categorizedMovies.add(movie.toMovie())
+    fun handleIntent(action: DiscoverScreenIntents) {
+        Log.d("Action",action.toString())
+        when (action) {
+            is DiscoverScreenIntents.OnChipClicked -> onChipStateChange(action.category)
+            is DiscoverScreenIntents.OnSearch -> TODO()
+            is DiscoverScreenIntents.OnPosterClicked -> TODO()
+            DiscoverScreenIntents.OnProfilePictureClicked -> TODO()
+            is DiscoverScreenIntents.OnTabClicked -> {
+                when(action.screen){
+                    0-> {
+                        Log.d("TabClicked","Movie tab clicked")
+                        _discoverScreenState.update {
+                            it.copy( screenTab = ScreenTab(true,false) )
+                        }
+                    }
+                    1-> {
+                        Log.d("TabClicked", "Series tab clicked")
+                        _discoverScreenState.update {
+                            it.copy( screenTab = ScreenTab(false,true))
+                        }
+                    }
                 }
+            }
         }
+
     }
 
-    fun onBookmarkClick(id: Int){
+    private fun loadData() {
         viewModelScope.launch {
-            repository.bookMark(_iconState.value.addBookmark,id)
+            repository.getMovie().collect { movieList ->
+                originalMovieData = movieList.map { it.toMovie() }.toMutableList()
+                _discoverScreenState.update {
+                    it.copy(
+                        movies = originalMovieData
+                    )
+                }
+            }
         }
     }
 
+
+    private fun onChipStateChange(category: Category) {
+        Log.d("onChipChange","Before clicking" + _filterChipState.value.toString())
+        val categoriesToShow = mutableListOf<Int>()
+        when (category) {
+            Category.NowPlaying -> {
+                _filterChipState.update {
+                    it.copy(nowPlaying = !_filterChipState.value.nowPlaying)
+                }
+                if (_filterChipState.value.nowPlaying)
+                    categoriesToShow.add(resolveCategory(Category.NowPlaying))
+                else categoriesToShow.remove(resolveCategory(Category.NowPlaying))
+
+                moviesFilter(categoriesToShow)
+            }
+
+            Category.TopRated -> {
+                _filterChipState.update {
+                    it.copy(topRated = !_filterChipState.value.topRated)
+                }
+                if (_filterChipState.value.topRated)
+                    categoriesToShow.add(resolveCategory(Category.TopRated))
+                else categoriesToShow.remove(resolveCategory(Category.TopRated))
+
+                moviesFilter(categoriesToShow)
+            }
+
+            Category.UpComing -> {
+                _filterChipState.update {
+                    it.copy(
+                        upComing = !_filterChipState.value.upComing
+                    )
+                }
+
+                if (_filterChipState.value.upComing)
+                    categoriesToShow.add(resolveCategory(Category.UpComing))
+                else categoriesToShow.remove(resolveCategory(Category.UpComing))
+
+                moviesFilter(categoriesToShow)
+
+            }
+
+            Category.Popular -> {
+                _filterChipState.update {
+                    it.copy(popular = !_filterChipState.value.popular)
+                }
+
+                if (_filterChipState.value.popular)
+                    categoriesToShow.add(resolveCategory(Category.Popular))
+                else categoriesToShow.remove(resolveCategory(Category.Popular))
+
+                moviesFilter(categoriesToShow)
+            }
+        }
+        Log.d("onChipChange","After clicking" + _filterChipState.value.toString())
+    }
+
+    private fun moviesFilter(category: List<Int>) {
+        if (category.isNotEmpty()){
+            _discoverScreenState.update {
+                it.copy(
+                    movies = originalMovieData.filter { movie ->
+                        atLeast(movie.category,category)
+                    }.toMutableList()
+                )
+            }
+        } else {
+            _discoverScreenState.update {
+                it.copy(
+                    movies = originalMovieData.toMutableList()
+                )
+            }
+
+        }
+    }
+
+
+    private fun atLeast(categoriesForMovie: List<Int>, list: List<Int>): Boolean {
+        var containsCategory = false
+        list.forEach {
+            containsCategory = categoriesForMovie.contains(it)
+        }
+        return containsCategory
+    }
 }
+
 
 data class DiscoverScreenState(
     val searchQuery:String="",
-    //val iconState: IconState=IconState(),
-    val filterChipState: FilterChipState=FilterChipState(),
-    val movies: List<Movie> = emptyList()
+    val movies: MutableList<Movie> = mutableListOf(),
+    val filterChipState: FilterChipState = FilterChipState(),
+    val screenTab: ScreenTab = ScreenTab()
 )
-
 
 data class IconState(
     val showOverview:Boolean=false,
@@ -138,3 +188,13 @@ data class FilterChipState(
     val upComing:Boolean=false,
     val popular:Boolean=false,
 )
+
+data class ScreenTab(
+    val movies: Boolean = true,
+    val series: Boolean = false
+)
+
+//Category.NowPlaying -> 1
+//Category.UpComing -> 2
+//Category.TopRated -> 3
+//Category.Popular -> 4

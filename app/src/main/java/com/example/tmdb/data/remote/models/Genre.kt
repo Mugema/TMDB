@@ -1,4 +1,4 @@
-package com.example.tmdb.data.remote
+package com.example.tmdb.data.remote.models
 
 data class Genre(
     val id: Int,

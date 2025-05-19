@@ -1,12 +1,12 @@
-package com.example.tmdb.data.local
+package com.example.tmdb.data.local.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
 data class MoviesEntity(
-    val backdropPath: String,
     @PrimaryKey(autoGenerate = false)val id: Int,
+    val backdropPath: String,
     val originalLanguage: String,
     val originalTitle: String,
     val overview: String,

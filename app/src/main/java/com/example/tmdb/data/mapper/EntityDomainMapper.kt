@@ -1,9 +1,9 @@
 package com.example.tmdb.data.mapper
 
-import com.example.tmdb.data.local.MoviesEntity
+import com.example.tmdb.data.local.model.MoviesEntity
 import com.example.tmdb.domain.Movies
 
-fun MoviesEntity.toMovies(genre:List<String>,category: List<Int> = listOf()):Movies{
+fun MoviesEntity.toMovies(genre:List<Int>,category: List<Int> = listOf()):Movies{
     return Movies(
         backdropPath=backdropPath,
         originalLanguage=originalLanguage,

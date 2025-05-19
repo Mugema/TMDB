@@ -5,23 +5,14 @@ import kotlinx.coroutines.flow.Flow
 
 interface TMDBRepository {
 
-    suspend fun addMovieGenre()
+    suspend fun nextPage()
 
-    suspend fun addMovie()
-
-    suspend fun getMovie():Flow<Movies>
-
-    //suspend fun getGenreMovie(id:Int):List<String>
-
-    suspend fun addMovieMGenreCrossRef()
-
-    suspend fun addMovieCategoryCrossRef(catId:Int,id:Int)
-
-    suspend fun addCategory()
-
-    suspend fun getMovieCategory(id: Int):List<Int>
+    suspend fun getMovie():Flow<List<Movies>>
 
     suspend fun bookMark(bookMark:Boolean,id: Int)
 
-    suspend fun getBookMarked():List<Movies>
+
+//    suspend fun searchMovie(query:String):Flow<Movies>
+
+//    suspend fun searchSeries():Flow
 }

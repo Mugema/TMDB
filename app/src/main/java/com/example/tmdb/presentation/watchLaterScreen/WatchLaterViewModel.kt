@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tmdb.domain.repository.TMDBRepository
 import com.example.tmdb.presentation.models.Movie
-import com.example.tmdb.presentation.models.toMovie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,12 +35,12 @@ class WatchLaterViewModel @Inject constructor(
     }
 
      fun getMovieData(){
-        viewModelScope.launch {
-            _bookmarked.value=repository.getBookMarked().map{item->
-                item.toMovie()
-            }
-
-        }
+//        viewModelScope.launch {
+//            _bookmarked.value=repository.getBookMarked().map{item->
+//                item.toMovie()
+//            }
+//
+//        }
     }
 
 }

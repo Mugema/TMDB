@@ -16,9 +16,6 @@ sealed interface Routes{
     object Settings
 
     @Serializable
-    object Home
-
-    @Serializable
     object Authorization
 
     @Serializable
