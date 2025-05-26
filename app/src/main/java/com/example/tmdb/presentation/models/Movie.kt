@@ -1,63 +1,37 @@
 package com.example.tmdb.presentation.models
 
 import com.example.tmdb.domain.Movies
+import com.example.tmdb.domain.mapGenre
+
 
 data class Movie(
-    val title:String,
-    val overview:String,
-    val image:String,
-    val genre:List<String>,
-    val rating:Double,
-    val date:String,
+    val title:String="N/A",
+    val overview:String="N/A",
+    val image:String="N/A",
+    val backDrop:String = "N/A",
+    val genre:List<String> = listOf("N/A"),
+    val rating:Double=0.0,
+    val date:String="N/A",
     val bookmark:Boolean=false,
-    val id:Int,
-    val category: List<Int> = mutableListOf<Int>()
+    val id:Int=0,
+    val category: List<Int> = mutableListOf<Int>(),
+    val adult: String = "18+",
+    val originalLanguage: String = "ENG"
 )
 
 fun Movies.toMovie(): Movie {
     return Movie(
-        title= if (originalTitle==title) title
-        else "$originalTitle($title)",
-        genre = mapGenre(genre),
-        image = posterPath,
+        title= if (originalTitle==title) title else "$originalTitle($title)",
         overview = overview,
+        genre = mapGenre(genre),
+        backDrop = backdropPath,
+        image = posterPath,
         rating = voteAverage,
-        date = releaseDate,
+        date = releaseDate.substring(0..3),
         bookmark = bookmark,
         id=id,
-        category = category
+        category = category,
+        adult = "18+",
+        originalLanguage = originalLanguage
     )
 }
-
-fun mapGenre(genre:List<Int>):List<String>{
-    val genreString = mutableListOf<String>()
-    genre.forEach {
-        genreString.add(
-        when(it){
-            28 -> "Action"
-            12-> "Adventure"
-            16->"Animation"
-            35 ->"Comedy"
-            80 ->"Crime"
-            99 ->"Documentary"
-            18 -> "Drama"
-            10751 -> "Family"
-            14-> "Fantasy"
-            36 -> "History"
-            27 -> "Horror"
-            10402 -> "Music"
-            9648 -> "Mystery"
-            10749 -> "Romance"
-            878 -> "Science Fiction"
-            10770 -> "TV Movie"
-            53 -> "Thriller"
-            10752 -> "War"
-            37->"Western"
-            else -> "Unknown"
-        }
-        )
-    }
-
-    return genreString
-}
-

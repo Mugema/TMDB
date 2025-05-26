@@ -1,0 +1,16 @@
+package com.example.tmdb.domain
+
+import com.example.tmdb.presentation.models.Actor
+
+fun Personality.toActor(): Actor{
+    return Actor(
+        adult = adult,
+        gender = if (gender ==2 ) "Male" else if(gender==1) "Female" else "Xx",
+        id = id,
+        knownFor = knownFor,
+        knownForDepartment = knownForDepartment,
+        name = "$originalName $name",
+        popularity = popularity,
+        profilePath = profilePath
+    )
+}

@@ -15,5 +15,6 @@ data class MoviesEntity(
     val title: String,
     val video: Boolean,
     val voteAverage: Double,
-    val bookMark:Boolean=false
+    val bookMark:Boolean=false,
+    val voteCount:Int =0
 )

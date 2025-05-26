@@ -23,6 +23,12 @@ interface MoviesDao {
     @Query("Select * from MoviesEntity")
     fun getMovies():Flow<List<MoviesEntity>>
 
+    @Query("Select  * from MoviesEntity where id = :id")
+    fun getMovieWithId(id:Int): Flow<MoviesEntity>
+
     @Query("Select * from MoviesEntity")
     suspend fun checkTable():List<MoviesEntity>
+
+    @Query("Select * from MoviesEntity where title Like '%' || :query || '%' or originalTitle Like '%' || :query || '%' ")
+    suspend fun searchBasedOnTitle(query:String): List<MoviesEntity>
 }

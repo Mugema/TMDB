@@ -36,20 +36,19 @@ class DiscoverScreenViewModel @Inject constructor(
 
     private var originalMovieData = mutableListOf<Movie>()
 
-
-
     init {
         loadData()
     }
-
 
     fun handleIntent(action: DiscoverScreenIntents) {
         Log.d("Action",action.toString())
         when (action) {
             is DiscoverScreenIntents.OnChipClicked -> onChipStateChange(action.category)
-            is DiscoverScreenIntents.OnSearch -> TODO()
-            is DiscoverScreenIntents.OnPosterClicked -> TODO()
+
+            is DiscoverScreenIntents.OnSearch -> _discoverScreenState.update { it.copy(searchQuery = action.query) }
+
             DiscoverScreenIntents.OnProfilePictureClicked -> TODO()
+
             is DiscoverScreenIntents.OnTabClicked -> {
                 when(action.screen){
                     0-> {
@@ -171,10 +170,13 @@ class DiscoverScreenViewModel @Inject constructor(
 
 
 data class DiscoverScreenState(
+    val isMovieTab: Boolean = true,
+    val loading: Boolean=false,
+    val showMovie: Movie = Movie(),
     val searchQuery:String="",
     val movies: MutableList<Movie> = mutableListOf(),
     val filterChipState: FilterChipState = FilterChipState(),
-    val screenTab: ScreenTab = ScreenTab()
+    val screenTab: ScreenTab = ScreenTab(),
 )
 
 data class IconState(

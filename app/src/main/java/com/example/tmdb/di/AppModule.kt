@@ -7,6 +7,7 @@ import com.example.tmdb.data.local.MoviesLocalDataSource
 import com.example.tmdb.data.local.dao.CategoryDao
 import com.example.tmdb.data.local.dao.GenreDao
 import com.example.tmdb.data.local.dao.MoviesDao
+import com.example.tmdb.data.local.dao.PersonalityDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,14 +48,15 @@ object AppModule {
         dispatcher: CoroutineDispatcher,
         categoryDao: CategoryDao,
         movieDao: MoviesDao,
-        genreDao: GenreDao
+        genreDao: GenreDao,
+        personalityDao: PersonalityDao
     ): MoviesLocalDataSource {
         return MoviesLocalDataSource(
             ioDispatcher =  dispatcher,
             categoryDao = categoryDao,
             movieDao = movieDao,
-            genreDao = genreDao
-
+            genreDao = genreDao,
+            personalityDao = personalityDao
         )
     }
 
@@ -76,6 +78,11 @@ object AppModule {
         return db.getMovieDao()
     }
 
+    @Singleton
+    @Provides
+    fun providesPersonalityDao(db: MovieDb): PersonalityDao{
+        return db.getPersonalityDao()
+    }
     @Singleton
     @Provides
     fun providesKtorClient(): HttpClient{

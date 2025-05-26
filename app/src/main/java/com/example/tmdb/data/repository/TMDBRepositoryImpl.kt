@@ -1,9 +1,14 @@
 package com.example.tmdb.data.repository
 
-import android.util.Log
+import com.example.tmdb.domain.DataErrors
 import com.example.tmdb.domain.Movies
 import com.example.tmdb.domain.Result
+import com.example.tmdb.domain.map
 import com.example.tmdb.domain.repository.TMDBRepository
+import com.example.tmdb.domain.toActor
+import com.example.tmdb.presentation.models.Actor
+import com.example.tmdb.presentation.models.Movie
+import com.example.tmdb.presentation.models.toMovie
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -12,6 +17,7 @@ class TMDBRepositoryImpl @Inject constructor(
     private val moviesRepositoryImpl: MoviesRepositoryImpl,
     private val ioDispatcher:CoroutineDispatcher
 ):TMDBRepository {
+
     override suspend fun nextPage() {
         TODO("Not yet implemented")
     }
@@ -28,5 +34,12 @@ class TMDBRepositoryImpl @Inject constructor(
         moviesRepositoryImpl.bookMarkMovie(bookMark = bookMark, movieId = id)
     }
 
+    override suspend fun searchMovie(query: String): Result<List<Movie>, DataErrors> {
+        return moviesRepositoryImpl.searchMovie(query).map { it.map { movie-> movie.toMovie() } }
+    }
+
+    override suspend fun searchActor(query:String): Result<List<Actor>, DataErrors> {
+        return moviesRepositoryImpl.searchPerson(query).map { it.map { it.toActor() } }
+    }
 
 }

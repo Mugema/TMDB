@@ -1,6 +1,10 @@
 package com.example.tmdb.domain.repository
 
+import com.example.tmdb.domain.DataErrors
 import com.example.tmdb.domain.Movies
+import com.example.tmdb.domain.Result
+import com.example.tmdb.presentation.models.Actor
+import com.example.tmdb.presentation.models.Movie
 import kotlinx.coroutines.flow.Flow
 
 interface TMDBRepository {
@@ -11,8 +15,9 @@ interface TMDBRepository {
 
     suspend fun bookMark(bookMark:Boolean,id: Int)
 
+    suspend fun searchMovie(query:String): Result<List<Movie>, DataErrors>
 
-//    suspend fun searchMovie(query:String):Flow<Movies>
+    suspend fun searchActor(query:String): Result<List<Actor>, DataErrors>
 
 //    suspend fun searchSeries():Flow
 }

@@ -23,4 +23,10 @@ sealed interface Routes{
 
     @Serializable
     object WatchLater
+
+    @Serializable
+    data class MovieDetailsScreen(val movieId:Int)
+
+    @Serializable
+    data class SearchResults(val query:String)
 }

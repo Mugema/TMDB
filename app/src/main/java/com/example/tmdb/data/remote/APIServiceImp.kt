@@ -1,5 +1,6 @@
 package com.example.tmdb.data.remote
 
+import com.example.tmdb.data.remote.models.ActorDto
 import com.example.tmdb.data.remote.models.MoviesDto
 import com.example.tmdb.domain.Category
 import com.example.tmdb.domain.DataErrors
@@ -57,5 +58,25 @@ class APIServiceImp @Inject constructor(
 
         }
     }
-    
+
+    override suspend fun searchForMovie(query: String): Result<MoviesDto, DataErrors.RemoteError> {
+        return safeCall {
+            client.get {
+                url(ApiService.BASE_URL + ApiService.SEARCH_MOVIE)
+                parameter("query",query)
+                parameter("api_Key", ApiService.API_KEY)
+            }
+        }
+    }
+
+    override suspend fun searchForPerson(query: String): Result<ActorDto, DataErrors.RemoteError> {
+        return safeCall {
+            client.get {
+                url(ApiService.BASE_URL + ApiService.SEARCH_PERSON)
+                parameter("query",query)
+                parameter("api_Key", ApiService.API_KEY)
+            }
+        }
+    }
+
 }

@@ -6,7 +6,9 @@ sealed interface DataErrors:Error {
         SERIALIZATION,
         UNKNOWN
     }
-    enum class LocalError:DataErrors{}
+    enum class LocalError:DataErrors{
+        NOTFOUND,
+    }
 }
 
 interface Error

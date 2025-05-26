@@ -3,14 +3,21 @@ package com.example.tmdb.data.local
 import com.example.tmdb.data.local.dao.CategoryDao
 import com.example.tmdb.data.local.dao.GenreDao
 import com.example.tmdb.data.local.dao.MoviesDao
+import com.example.tmdb.data.local.dao.PersonalityDao
 import com.example.tmdb.data.local.model.CategoriesEntity
 import com.example.tmdb.data.local.model.GenreEntity
 import com.example.tmdb.data.local.model.MoviesEntity
+import com.example.tmdb.data.local.model.PersonalityEntity
+import com.example.tmdb.data.mapper.toMovies
 import com.example.tmdb.data.mapper.toMoviesEntity
 import com.example.tmdb.data.remote.models.MoviesDto
+import com.example.tmdb.domain.DataErrors
+import com.example.tmdb.domain.Movies
+import com.example.tmdb.domain.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -18,7 +25,8 @@ class MoviesLocalDataSource @Inject constructor(
     private val ioDispatcher:CoroutineDispatcher,
     private val movieDao: MoviesDao,
     private val categoryDao: CategoryDao,
-    private val genreDao: GenreDao
+    private val genreDao: GenreDao,
+    private val personalityDao: PersonalityDao
 ) {
 
     val movies: Flow<List<MoviesEntity>> =  movieDao.getMovies()
@@ -26,6 +34,46 @@ class MoviesLocalDataSource @Inject constructor(
     suspend fun getGenreForMovie(movieId:Int):List<Int>{
         return genreDao.selectGenreBasedOnId(movieId).map { it.genreId }
 
+    }
+
+    suspend fun getMovieWithId(id:Int): Flow<Movies>{
+        return movieDao.getMovieWithId(id).map {
+            it.toMovies(
+            genre = getGenreForMovie(id),
+            category = getCategoryForMovie(id)
+        ) }
+    }
+
+    suspend fun moviesForPersonality(id:Int): List<Movies>{
+        var movies: List<Movies>
+        withContext(ioDispatcher) {
+            movies = personalityDao.getMoviesForPersonality(id).map {
+                it.movies.toMovies(
+                genre = getGenreForMovie(it.movies.id),
+                category = getCategoryForMovie(it.movies.id) )
+            }
+        }
+        return movies
+    }
+
+    suspend fun searchPersonality(query:String) : Result<List<PersonalityEntity>, DataErrors.LocalError> {
+        val personalities = personalityDao.getPersonalityBasedOnName(query)
+
+        return if (personalities.isEmpty()) Result.Error(DataErrors.LocalError.NOTFOUND)
+        else Result.Success(personalities)
+    }
+
+    suspend fun searchMovie(query:String) : Result<List<MoviesEntity>, DataErrors.LocalError>{
+        val movies = movieDao.searchBasedOnTitle(query)
+
+        return  if (movies.isEmpty()) Result.Error(DataErrors.LocalError.NOTFOUND)
+        else Result.Success(movies)
+    }
+
+
+
+    suspend fun addPersonality(personality: PersonalityEntity){
+        personalityDao.addPersonality(personality)
     }
 
     suspend fun getCategoryForMovie(movieId:Int):List<Int>{
@@ -56,7 +104,6 @@ class MoviesLocalDataSource @Inject constructor(
         categoryDao.addCategory(
             CategoriesEntity(categoryId,movieId)
         )
-
     }
 
     suspend fun bookMark(bookMark: Boolean,id:Int) {
@@ -65,11 +112,8 @@ class MoviesLocalDataSource @Inject constructor(
         }
     }
 
-    suspend fun emptyTable(): Boolean{
-        return if( movieDao.checkTable().size < 0 ){
-            false
-        } else true
-
+    suspend fun notEmptyTable(): Boolean{
+        return movieDao.checkTable().isNotEmpty()
     }
 
 }

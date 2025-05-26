@@ -1,5 +1,6 @@
 package com.example.tmdb.data.remote
 
+import com.example.tmdb.data.remote.models.ActorDto
 import com.example.tmdb.data.remote.models.MoviesDto
 import com.example.tmdb.domain.Category
 import com.example.tmdb.domain.DataErrors
@@ -13,5 +14,13 @@ class MoviesRemoteDataSource @Inject constructor(
 
         val movie = apiService.getMovies(category,page)
         return Pair(category,movie)
+    }
+
+    suspend fun searchForMovieBasedOnQuery(query:String):Result<MoviesDto, DataErrors.RemoteError>{
+        return apiService.searchForMovie(query)
+    }
+
+    suspend fun searchForPersonalityBasedOnQuery(query:String): Result<ActorDto, DataErrors.RemoteError>{
+        return apiService.searchForPerson(query)
     }
 }
