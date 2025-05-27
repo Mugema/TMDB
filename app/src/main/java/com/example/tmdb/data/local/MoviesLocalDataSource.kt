@@ -10,6 +10,7 @@ import com.example.tmdb.data.local.model.MoviesEntity
 import com.example.tmdb.data.local.model.PersonalityEntity
 import com.example.tmdb.data.mapper.toMovies
 import com.example.tmdb.data.mapper.toMoviesEntity
+import com.example.tmdb.data.remote.models.KnownForDto
 import com.example.tmdb.data.remote.models.MoviesDto
 import com.example.tmdb.domain.DataErrors
 import com.example.tmdb.domain.Movies
@@ -87,6 +88,18 @@ class MoviesLocalDataSource @Inject constructor(
                     movieDao.addMovie(movie.key)
                     addToGenreEntity(movie.key.id,movie.value)
                     addToCategoryEntity(movie.key.id,categoryId)
+                }
+            }
+        }
+    }
+
+    suspend fun addMovies(movieList: List<KnownForDto>, category:Int =1 ){
+        withContext(Dispatchers.Default){
+            movieList.forEach { movie ->
+                movie.toMoviesEntity().forEach {
+                    movieDao.addMovie(it.key)
+                    addToGenreEntity(it.key.id,it.value)
+                    addToCategoryEntity(it.key.id,category)
                 }
             }
         }

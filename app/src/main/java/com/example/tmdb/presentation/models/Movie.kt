@@ -27,7 +27,7 @@ fun Movies.toMovie(): Movie {
         backDrop = backdropPath,
         image = posterPath,
         rating = voteAverage,
-        date = releaseDate.substring(0..3),
+        date = if (releaseDate.length > 4) releaseDate.substring(0..3) else "N/A",
         bookmark = bookmark,
         id=id,
         category = category,

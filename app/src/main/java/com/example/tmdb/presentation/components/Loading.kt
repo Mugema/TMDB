@@ -40,7 +40,6 @@ fun LoadingAnimation(modifier: Modifier= Modifier){
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(10))
             .height(256.dp)
             .width(128.dp)
             .background(backgroundGradient)

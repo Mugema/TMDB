@@ -1,7 +1,7 @@
 package com.example.tmdb.presentation.discoverScreen.components
 
 //@Composable
-//fun DiscoverScreenIntents(viewModel: DiscoverScreenViewModel,id:Int){
+//fun DiscoverScreenIntents(viewModel: DiscoverScreenViewModel,actorId:Int){
 //    val iconState=viewModel.iconState.collectAsStateWithLifecycle()
 //    Box(
 //        modifier = Modifier.fillMaxWidth()
@@ -17,7 +17,7 @@ package com.example.tmdb.presentation.discoverScreen.components
 //        }
 //        IconButton(
 //            onClick = {viewModel.onEvent(Event.BOOKMARK)
-//                      viewModel.onBookmarkClick(id)},
+//                      viewModel.onBookmarkClick(actorId)},
 //            modifier = Modifier.align(Alignment.BottomEnd)) {
 //            Icon(
 //                imageVector = if(iconState.value.addBookmark) Icons.Default.Bookmark

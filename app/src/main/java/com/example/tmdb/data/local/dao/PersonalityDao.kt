@@ -13,7 +13,7 @@ interface PersonalityDao {
     @Upsert
     suspend fun addPersonality(personalityEntity: PersonalityEntity)
 
-    @Query("Select * from MoviesEntity join PersonalityEntity on PersonalityEntity.id")
+    @Query("Select * from MoviesEntity join PersonalityEntity on PersonalityEntity.actorId")
     fun getAllPersonalities(): Flow<List<PersonalityEntity>>
 
     @Query("Select * from PersonalityEntity where name like '%' ||:query|| '%' or " +
@@ -21,7 +21,7 @@ interface PersonalityDao {
     suspend fun getPersonalityBasedOnName(query: String): List<PersonalityEntity>
 
     @Query("Select * from MoviesEntity join PersonalityEntity on knownFor = MoviesEntity.id" +
-            " where  PersonalityEntity.id = :id")
+            " where  PersonalityEntity.actorId = :id")
     suspend fun getMoviesForPersonality(id:Int): List<MoviesForPersonality>
 }
 

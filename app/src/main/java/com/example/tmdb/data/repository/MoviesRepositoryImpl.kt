@@ -27,7 +27,7 @@ class MoviesRepositoryImpl @Inject constructor (
     private val ioDispatcher: CoroutineDispatcher,
     private val remoteDataSource: MoviesRemoteDataSource
 ): MoviesRepository {
-
+    val tag = "MOVIES_REPOSITORY_IMPL"
     val moviesFlow = localDataSource.movies.map { it.map { movie->
         movie.toMovies(
         genre = localDataSource.getGenreForMovie(movie.id),
@@ -35,23 +35,27 @@ class MoviesRepositoryImpl @Inject constructor (
     } }
 
     suspend fun syncMovieSearch(query: String): Result<MoviesEntity, DataErrors.RemoteError>?{
-        val response = remoteDataSource.searchForPersonalityBasedOnQuery(query)
+        Log.d(tag,"Getting data from the net")
+        val response = remoteDataSource.searchForMovieBasedOnQuery(query)
         when(response){
             is Result.Error -> return response
             is Result.Success -> {
-                response.data.results.forEach { actor ->
-                    actor.known_for.forEach { localDataSource.addPersonality(actor.toPersonalityEntity(it.id))  } }
+                localDataSource.addMovies(movieList = response.data, categoryId = 1)
                 return null
             }
         }
     }
 
     suspend fun syncPersonalitySearch(query:String): Result<PersonalityEntity, DataErrors.RemoteError>?{
-        val response = remoteDataSource.searchForMovieBasedOnQuery(query)
+        val response = remoteDataSource.searchForPersonalityBasedOnQuery(query)
         return when(response){
             is Result.Error -> return response
             is Result.Success -> {
-                localDataSource.addMovies(movieList = response.data, categoryId = 1)
+                response.data.results.forEach { actor ->
+                    if (actor.known_for != null) localDataSource.addMovies(movieList = actor.known_for)
+                    actor.known_for?.forEach {
+                        localDataSource.addPersonality(actor.toPersonalityEntity(it.id))
+                    } }
                 return null
             }
         }
@@ -62,6 +66,7 @@ class MoviesRepositoryImpl @Inject constructor (
 
         when(searchResponse){
             is Result.Error -> {
+                Log.d(tag,"Nothing found in the database")
                 syncMovieSearch(query)
                 searchResponse = localDataSource.searchMovie(query)
             }
@@ -91,12 +96,14 @@ class MoviesRepositoryImpl @Inject constructor (
                 syncPersonalitySearch(query)
                 searchResponse =localDataSource.searchPersonality(query)
             }
-            is Result.Success ->
+            is Result.Success ->{
                 return Result.Success(searchResponse.data.map { personality->
-                    personality.toPersonality(localDataSource.moviesForPersonality(personality.id)) })
+                    personality.toPersonality(localDataSource.moviesForPersonality(personality.actorId)) })
+            }
+
         }
         return searchResponse.map { it.map { personality ->
-            personality.toPersonality(localDataSource.moviesForPersonality(personality.id))
+            personality.toPersonality(localDataSource.moviesForPersonality(personality.actorId))
         } }
     }
 

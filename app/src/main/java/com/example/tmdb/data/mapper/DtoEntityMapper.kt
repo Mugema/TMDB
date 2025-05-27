@@ -2,6 +2,7 @@ package com.example.tmdb.data.mapper
 
 import com.example.tmdb.data.local.model.MoviesEntity
 import com.example.tmdb.data.local.model.PersonalityEntity
+import com.example.tmdb.data.remote.models.KnownForDto
 import com.example.tmdb.data.remote.models.MoviesDto
 import com.example.tmdb.data.remote.models.ResultActorDto
 
@@ -30,12 +31,35 @@ fun ResultActorDto.toPersonalityEntity(movieId:Int): PersonalityEntity{
     return PersonalityEntity(
         adult = adult,
         gender = gender,
-        id = id,
+        actorId = id,
         knownFor = movieId,
-        knownForDepartment = known_for_department,
-        name = name,
-        originalName = original_name,
-        popularity = popularity,
-        profilePath = profile_path
+        knownForDepartment = known_for_department ?: "N/A",
+        name = name ?: "N/A",
+        originalName = original_name ?: "N/A",
+        popularity = popularity ,
+        profilePath = profile_path ?: "N/A"
     )
+}
+
+fun KnownForDto.toMoviesEntity(): Map<MoviesEntity,List<Int>>{
+    val movieGenreMap = mutableMapOf<MoviesEntity,List<Int>>()
+    movieGenreMap.put(
+        MoviesEntity(
+            id = id,
+            backdropPath = backdrop_path ?: "N/A",
+            originalLanguage = original_language ?: "N/A",
+            originalTitle = original_title ?: "N/A",
+            overview = overview ?: "N/A",
+            posterPath = poster_path ?: "N/A",
+            releaseDate = release_date ?: "N/A",
+            title = title ?: "N/A",
+            video = video  == true,
+            voteAverage = vote_average ?: 0.0,
+            bookMark = false,
+            voteCount = vote_count ?: 0
+        ),
+        genre_ids ?: listOf(0)
+    )
+    return movieGenreMap
+
 }

@@ -88,7 +88,6 @@ fun MovieDetails(
                         painter = if (result.isSuccess) painter else painterResource(R.drawable.no_image),
                         contentDescription = null,
                     )
-
             }
         }
         Column(
@@ -149,7 +148,7 @@ fun MovieDetails(
                 .clip(RoundedCornerShape(20))
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(4.dp))
-            Text(movieData.overview, textAlign = TextAlign.Justify)
+            Text(movieData.overview)
 
         }
     }

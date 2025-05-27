@@ -17,8 +17,8 @@ interface ApiService{
         const val TOP_RATED =  "/3/movie/top_rated"
         const val POPULAR  = "/3/movie/popular"
         const val SEARCH_MOVIE = "/3/search/movie"
-        const val SEARCH_TV = "/3/search/person"
-        const val SEARCH_PERSON = "/3/search/tv"
+        const val SEARCH_TV = "/3/search/tv"
+        const val SEARCH_PERSON = "/3/search/person"
     }
 
     suspend fun getMovies(category: Category,page:Int=1): Result<MoviesDto, DataErrors.RemoteError>

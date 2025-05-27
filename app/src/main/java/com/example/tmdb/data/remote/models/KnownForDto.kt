@@ -1,5 +1,8 @@
 package com.example.tmdb.data.remote.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class KnownForDto(
     val adult: Boolean?=null,
     val backdrop_path: String?=null,

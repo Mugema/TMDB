@@ -27,7 +27,7 @@ fun PersonalityEntity.toPersonality(movies: List<Movies>): Personality{
     return Personality(
         adult = adult,
         gender = gender,
-        id = id,
+        id = actorId,
         knownFor = movies,
         knownForDepartment = knownForDepartment,
         name = name,

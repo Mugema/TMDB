@@ -1,5 +1,6 @@
 package com.example.tmdb.presentation.discoverScreen.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,7 +45,7 @@ fun MovieItem(
     )
 
     when(val result = imageResult){
-        null -> LoadingAnimation(modifier)
+        null -> LoadingAnimation(Modifier.clip(RoundedCornerShape(10)))
         else -> {
             Box{
                 Image(
@@ -52,7 +53,8 @@ fun MovieItem(
                     contentDescription = null,
                     modifier = modifier
                         .clip(RoundedCornerShape(10))
-                        .clickable { toMovieDetails(movie) }
+                        .clickable { toMovieDetails(movie)
+                        Log.d("Movie item",movie.toString())}
                         .border(width = 1.dp, Color.Black, RoundedCornerShape(10))
                 )
                 if (!movie.bookmark) {

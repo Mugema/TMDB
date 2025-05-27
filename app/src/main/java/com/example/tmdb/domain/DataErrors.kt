@@ -4,7 +4,8 @@ sealed interface DataErrors:Error {
     enum class RemoteError:DataErrors{
         NO_INTERNET,
         SERIALIZATION,
-        UNKNOWN
+        UNKNOWN,
+        UNAUTHORISED
     }
     enum class LocalError:DataErrors{
         NOTFOUND,

@@ -60,21 +60,21 @@ class APIServiceImp @Inject constructor(
     }
 
     override suspend fun searchForMovie(query: String): Result<MoviesDto, DataErrors.RemoteError> {
-        return safeCall {
+        return safeCall<MoviesDto> {
             client.get {
                 url(ApiService.BASE_URL + ApiService.SEARCH_MOVIE)
+                parameter("api_key", ApiService.API_KEY)
                 parameter("query",query)
-                parameter("api_Key", ApiService.API_KEY)
             }
         }
     }
 
     override suspend fun searchForPerson(query: String): Result<ActorDto, DataErrors.RemoteError> {
-        return safeCall {
+        return safeCall<ActorDto> {
             client.get {
                 url(ApiService.BASE_URL + ApiService.SEARCH_PERSON)
+                parameter("api_key", ApiService.API_KEY)
                 parameter("query",query)
-                parameter("api_Key", ApiService.API_KEY)
             }
         }
     }
