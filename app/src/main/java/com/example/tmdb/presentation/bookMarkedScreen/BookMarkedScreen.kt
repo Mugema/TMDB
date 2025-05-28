@@ -1,4 +1,4 @@
-package com.example.tmdb.presentation.watchLaterScreen
+package com.example.tmdb.presentation.bookMarkedScreen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +22,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.tmdb.presentation.bookMarkedScreen.components.WatchItem
 import com.example.tmdb.presentation.discoverScreen.components.Overview
-import com.example.tmdb.presentation.watchLaterScreen.components.WatchItem
 
 @Composable
 fun WatchLaterScreenRoot(modifier: Modifier = Modifier) {
@@ -34,7 +34,7 @@ fun WatchLaterScreenRoot(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WatchLaterScreen (viewModel: WatchLaterViewModel) {
+fun WatchLaterScreen (viewModel: BookMarkedViewModel) {
     val expanded = viewModel.expanded.collectAsStateWithLifecycle()
     val bookmarked=viewModel.bookmarked.collectAsStateWithLifecycle()
     Scaffold(

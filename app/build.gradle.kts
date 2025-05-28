@@ -84,10 +84,6 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
 
-    //Retrofit
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-
     //Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
@@ -116,11 +112,11 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(libs.androidx.navigation.compose.v100)
-
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.datastore)
+
+
 
 
 

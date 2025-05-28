@@ -1,4 +1,4 @@
-package com.example.tmdb.presentation.watchLaterScreen
+package com.example.tmdb.presentation.bookMarkedScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WatchLaterViewModel @Inject constructor(
+class BookMarkedViewModel @Inject constructor(
     private val repository:TMDBRepository
 ):ViewModel() {
     private var _expanded = MutableStateFlow(false)

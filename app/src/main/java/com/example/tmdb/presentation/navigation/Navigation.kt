@@ -14,13 +14,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import com.example.tmdb.presentation.bookMarkedScreen.WatchLaterScreenRoot
 import com.example.tmdb.presentation.discoverScreen.DiscoverScreenRoot
 import com.example.tmdb.presentation.login.LoginScreen
 import com.example.tmdb.presentation.navigation.Routes.MovieDetailsScreen
 import com.example.tmdb.presentation.searchResults.SearchResults
 import com.example.tmdb.presentation.showMovieDetails.MovieDetails
 import com.example.tmdb.presentation.signUpScreen.SignUpScreen
-import com.example.tmdb.presentation.watchLaterScreen.WatchLaterScreenRoot
 
 @Composable
 fun Navigation(
@@ -37,10 +37,11 @@ fun NavGraphBuilder.landing(navController: NavController){
             DiscoverScreenRoot(
                 modifier = Modifier.safeContentPadding(),
                 toMovieDetails = { navController.navigate( MovieDetailsScreen(movieId = it.id) ) },
-                toSearch = { navController.navigate(Routes.SearchResults(it)) }
+                toSearch = { navController.navigate(Routes.SearchResults(it)) },
+                toBookMarked = { navController.navigate(Routes.BookMarkedScreen)}
             )
         }
-        composable<Routes.WatchLater> {
+        composable<Routes.BookMarkedScreen> {
             WatchLaterScreenRoot( modifier = Modifier.safeContentPadding() )
         }
 

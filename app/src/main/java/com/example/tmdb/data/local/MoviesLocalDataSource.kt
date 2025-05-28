@@ -1,5 +1,6 @@
 package com.example.tmdb.data.local
 
+import android.util.Log
 import com.example.tmdb.data.local.dao.CategoryDao
 import com.example.tmdb.data.local.dao.GenreDao
 import com.example.tmdb.data.local.dao.MoviesDao
@@ -31,6 +32,7 @@ class MoviesLocalDataSource @Inject constructor(
 ) {
 
     val movies: Flow<List<MoviesEntity>> =  movieDao.getMovies()
+    val tag = "MovieLocalDataSource"
 
     suspend fun getGenreForMovie(movieId:Int):List<Int>{
         return genreDao.selectGenreBasedOnId(movieId).map { it.genreId }
@@ -54,6 +56,7 @@ class MoviesLocalDataSource @Inject constructor(
                 category = getCategoryForMovie(it.movies.id) )
             }
         }
+        Log.d(tag,"Size:${movies.size} Movies:$movies ")
         return movies
     }
 
@@ -61,7 +64,7 @@ class MoviesLocalDataSource @Inject constructor(
         val personalities = personalityDao.getPersonalityBasedOnName(query)
 
         return if (personalities.isEmpty()) Result.Error(DataErrors.LocalError.NOTFOUND)
-        else Result.Success(personalities)
+        else Result.Success(personalities.distinctBy { it.actorId })
     }
 
     suspend fun searchMovie(query:String) : Result<List<MoviesEntity>, DataErrors.LocalError>{

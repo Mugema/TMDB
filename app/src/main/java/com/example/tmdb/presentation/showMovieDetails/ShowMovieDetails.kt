@@ -1,6 +1,5 @@
 package com.example.tmdb.presentation.showMovieDetails
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +36,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,12 +63,10 @@ fun MovieDetails(
     val scrollState = rememberScrollState()
     var imageResult by remember { mutableStateOf<Result<Painter>?>(null) }
 
-    Log.d("model","https://image.tmdb.org/t/p/original${movieData.backDrop}")
-
-    Log.d("movieDetails","$movieData")
+    val image = if(movieData.backDrop=="N/A") movieData.image else movie.backDrop
 
     val painter = rememberAsyncImagePainter(
-        model = "https://image.tmdb.org/t/p/original${movieData.backDrop}",
+        model = "https://image.tmdb.org/t/p/original$image",
         onSuccess = { imageResult = Result.success(it.painter) },
         onError = { imageResult = Result.failure(it.result.throwable) }
     )
@@ -83,7 +79,6 @@ fun MovieDetails(
         when(val result = imageResult) {
             null -> LoadingAnimation(Modifier.fillMaxWidth().clip(RectangleShape))
             else -> {
-
                     Image(
                         painter = if (result.isSuccess) painter else painterResource(R.drawable.no_image),
                         contentDescription = null,
@@ -98,7 +93,8 @@ fun MovieDetails(
                 .verticalScroll(scrollState)
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize()
             ) {
                 Column {
                     Row(
@@ -113,8 +109,6 @@ fun MovieDetails(
                             modifier = Modifier
                                 .shadow(8.dp, CircleShape, ambientColor = Color.Black, spotColor = Color.White)
                                 .clip(CircleShape)
-
-
                         ){
                             Text(String.format(Locale.US,"%.1f",movieData.rating),modifier=Modifier)
                         }

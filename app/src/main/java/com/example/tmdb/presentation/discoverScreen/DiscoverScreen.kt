@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,10 +24,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,7 +57,8 @@ import com.example.tmdb.ui.theme.TMDBTheme
 fun DiscoverScreenRoot(
     modifier: Modifier = Modifier,
     toMovieDetails: (movie:Movie)-> Unit = {},
-    toSearch: (query:String) -> Unit = {}
+    toSearch: (query:String) -> Unit = {},
+    toBookMarked:()->Unit ={}
 ) {
     val discoverScreenViewModel = hiltViewModel<DiscoverScreenViewModel>()
 
@@ -67,7 +71,8 @@ fun DiscoverScreenRoot(
         filterChipState = chipState,
         onIntent = discoverScreenViewModel::handleIntent,
         toMovieDetails = toMovieDetails,
-        toSearch = toSearch
+        toSearch = toSearch,
+        toBookMarked=toBookMarked
     )
 }
 
@@ -78,7 +83,8 @@ fun DiscoverScreen(
     filterChipState: FilterChipState,
     onIntent:(DiscoverScreenIntents)->Unit,
     toMovieDetails: (Movie) -> Unit,
-    toSearch:(query: String) -> Unit
+    toSearch:(query: String) -> Unit,
+    toBookMarked: () -> Unit
 ){
     var animate by remember { mutableStateOf(true) }
 
@@ -114,16 +120,28 @@ fun DiscoverScreen(
                         exit = ExitTransition.None,
                         label = ""
                     ) {
-                        if(discoverScreenState.searchQuery=="") Icon(imageVector = Icons.Default.Search, contentDescription = null,)
-                        else Icon(imageVector = Icons.Default.Clear,contentDescription = null)
+                        if(discoverScreenState.searchQuery=="") {
+                            IconButton(onClick = { toSearch(discoverScreenState.searchQuery) }) {
+                                Icon(imageVector = Icons.Default.Search, contentDescription = null,)
+                            }
+                        }
+                        else {
+                            IconButton(onClick = { onIntent(DiscoverScreenIntents.OnClearClicked) }) {
+                                Icon(imageVector = Icons.Default.Clear,contentDescription = null)
+                            }
+                        }
                     }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch =  { toSearch(discoverScreenState.searchQuery) } )
+                keyboardActions = KeyboardActions(onSearch =  {
+                    toSearch(discoverScreenState.searchQuery)
+                    onIntent(DiscoverScreenIntents.OnClearClicked)
+                } )
             )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(start = 8.dp)
         ) {
             ElevatedFilterChip(
@@ -136,13 +154,21 @@ fun DiscoverScreen(
                 onClick={ onIntent(DiscoverScreenIntents.OnTabClicked(1)) },
                 label = { Text("Series") }
             )
+            Spacer(Modifier.weight(1f))
+            IconButton(
+                onClick = { toBookMarked() },
+            ) {
+                Icon(imageVector = Icons.Default.Bookmarks, contentDescription = null)
+            }
         }
         FilterChipRow(filterChipState){ onIntent(it) }
 
         AnimatedContent(
             targetState = discoverScreenState.isMovieTab,
         ) { state ->
-            if (state) Discover(state = discoverScreenState){ toMovieDetails(it) }
+            if (state) Discover(state = discoverScreenState){
+                toMovieDetails(it)
+                onIntent(DiscoverScreenIntents.OnClearClicked) }
             else Box(modifier= Modifier.fillMaxSize()){Text("Works")}
         }
     }

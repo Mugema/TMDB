@@ -22,7 +22,7 @@ sealed interface Routes{
     object Landing
 
     @Serializable
-    object WatchLater
+    object BookMarkedScreen
 
     @Serializable
     data class MovieDetailsScreen(val movieId:Int)

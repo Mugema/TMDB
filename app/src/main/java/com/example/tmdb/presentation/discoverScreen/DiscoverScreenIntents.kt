@@ -7,4 +7,5 @@ sealed interface DiscoverScreenIntents{
     data class OnSearch(val query:String):DiscoverScreenIntents
     data class OnTabClicked(val screen:Int): DiscoverScreenIntents
     data object OnProfilePictureClicked: DiscoverScreenIntents
+    data object OnClearClicked: DiscoverScreenIntents
 }

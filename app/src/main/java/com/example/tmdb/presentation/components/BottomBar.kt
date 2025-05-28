@@ -41,7 +41,7 @@ fun NavigationBottomBar(
 ){
     val barItems = listOf(
         BarItem("Discover", Icons.Default.Explore, Icons.Outlined.Explore,false, Routes.Discover),
-        BarItem("List", Icons.Default.Task, Icons.Outlined.Task,true, Routes.WatchLater),
+        BarItem("List", Icons.Default.Task, Icons.Outlined.Task,true, Routes.BookMarkedScreen),
         BarItem("Settings", Icons.Default.Settings, Icons.Outlined.Settings,true, Routes.Settings,9)
     )
 
@@ -98,7 +98,7 @@ fun BottomBar(modifier: Modifier = Modifier, navController: NavController){
         BottomAppBar { NavigationBottomBar(modifier,navController) }
 
     }
-    if (currentDestination?.hierarchy?.any{it.hasRoute(Routes.WatchLater::class)}==true){
+    if (currentDestination?.hierarchy?.any{it.hasRoute(Routes.BookMarkedScreen::class)}==true){
         BottomAppBar { NavigationBottomBar(modifier,navController) }
     }
 

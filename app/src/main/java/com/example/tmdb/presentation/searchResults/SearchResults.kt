@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -138,11 +139,10 @@ fun SearchResults(
                         }
                         else{
                             ActorResult(
-                                actorList = screenState.actors,
+                                actorList = screenState.actors.sortedByDescending { it.popularity },
                                 query = query,
                                 showKnownFor = { isShowKnownFor = true}
                             ) { viewModel.handleIntent(it) }
-
                         }
                     }
 
@@ -176,9 +176,7 @@ fun Actor(
             Image(
                 imageVector = Icons.Default.AccountCircle,
                 contentDescription = null,
-                modifier= Modifier
-                    .clip(CircleShape)
-                    .size(64.dp)
+                modifier= Modifier.clip(CircleShape).size(64.dp)
             )
         }
         AsyncImage(
@@ -208,7 +206,12 @@ fun ActorResult(
     AnimatedVisibility(
         visible = actorList.isEmpty()
     ) {
-       Text("No actors with the name $query")
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier=modifier.fillMaxSize()
+        ){
+            Text("No actors with the name $query", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+        }
     }
     LazyColumn (
         modifier = modifier.fillMaxSize(),
@@ -237,7 +240,12 @@ fun MovieResults(
     AnimatedVisibility(
         visible = movieList.isEmpty()
     ) {
-        Text("No movies with title $query found")
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier=modifier.fillMaxSize()
+        ){
+            Text("No movies found with the title $query", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+        }
     }
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),

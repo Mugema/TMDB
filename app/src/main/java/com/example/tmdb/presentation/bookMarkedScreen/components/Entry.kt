@@ -1,4 +1,4 @@
-package com.example.tmdb.presentation.watchLaterScreen.components
+package com.example.tmdb.presentation.bookMarkedScreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,11 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tmdb.presentation.bookMarkedScreen.BookMarkedViewModel
 import com.example.tmdb.presentation.models.Movie
-import com.example.tmdb.presentation.watchLaterScreen.WatchLaterViewModel
 
 @Composable
-fun WatchItem(movie:Movie,viewModel: WatchLaterViewModel){
+fun WatchItem(movie:Movie,viewModel: BookMarkedViewModel){
     Column(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ) {

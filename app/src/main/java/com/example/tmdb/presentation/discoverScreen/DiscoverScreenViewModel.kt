@@ -65,6 +65,8 @@ class DiscoverScreenViewModel @Inject constructor(
                     }
                 }
             }
+
+            DiscoverScreenIntents.OnClearClicked -> _discoverScreenState.update { it.copy(searchQuery = "") }
         }
 
     }
