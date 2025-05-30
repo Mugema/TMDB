@@ -3,10 +3,13 @@ package com.example.tmdb.presentation.navigation
 import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -14,7 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import com.example.tmdb.presentation.bookMarkedScreen.WatchLaterScreenRoot
+import com.example.tmdb.presentation.bookMarkedScreen.BookMarkedScreenRoot
 import com.example.tmdb.presentation.discoverScreen.DiscoverScreenRoot
 import com.example.tmdb.presentation.login.LoginScreen
 import com.example.tmdb.presentation.navigation.Routes.MovieDetailsScreen
@@ -42,11 +45,15 @@ fun NavGraphBuilder.landing(navController: NavController){
             )
         }
         composable<Routes.BookMarkedScreen> {
-            WatchLaterScreenRoot( modifier = Modifier.safeContentPadding() )
+            BookMarkedScreenRoot(
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
+                toMovieDetails = { navController.navigate(MovieDetailsScreen(it.id)) }
+            )
         }
 
         composable<MovieDetailsScreen> { backStack ->
             val movie = backStack.toRoute<MovieDetailsScreen>()
+
             Log.d("Navigation", "MovieDetailScreen ${movie.movieId}")
             MovieDetails(
                 modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),

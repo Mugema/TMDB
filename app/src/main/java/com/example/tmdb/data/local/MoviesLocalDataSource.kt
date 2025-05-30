@@ -39,6 +39,12 @@ class MoviesLocalDataSource @Inject constructor(
 
     }
 
+    fun getBookMarkedMovies(): Flow<List<Movies>>{
+        return  movieDao.getBookMarkedMovies().map { it.map { it.toMovies(
+            genre = getGenreForMovie(it.id),
+            category = getCategoryForMovie(it.id)
+        ) } }
+    }
     suspend fun getMovieWithId(id:Int): Flow<Movies>{
         return movieDao.getMovieWithId(id).map {
             it.toMovies(

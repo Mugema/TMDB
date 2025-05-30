@@ -11,6 +11,7 @@ import com.example.tmdb.presentation.models.Movie
 import com.example.tmdb.presentation.models.toMovie
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TMDBRepositoryImpl @Inject constructor(
@@ -40,6 +41,10 @@ class TMDBRepositoryImpl @Inject constructor(
 
     override suspend fun searchActor(query:String): Result<List<Actor>, DataErrors> {
         return moviesRepositoryImpl.searchPerson(query).map { it.map { it.toActor() } }
+    }
+
+    override  fun getBookMarkedMovie(): Flow<List<Movie>> {
+        return moviesRepositoryImpl.getBookMarked().map { it.map { it.toMovie() } }
     }
 
 }

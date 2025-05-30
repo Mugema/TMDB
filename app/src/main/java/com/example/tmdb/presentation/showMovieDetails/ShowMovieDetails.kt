@@ -63,7 +63,7 @@ fun MovieDetails(
     val scrollState = rememberScrollState()
     var imageResult by remember { mutableStateOf<Result<Painter>?>(null) }
 
-    val image = if(movieData.backDrop=="N/A") movieData.image else movie.backDrop
+    val image = if(movieData.backDrop=="N/A") movieData.image else movieData.backDrop
 
     val painter = rememberAsyncImagePainter(
         model = "https://image.tmdb.org/t/p/original$image",
@@ -110,7 +110,7 @@ fun MovieDetails(
                                 .shadow(8.dp, CircleShape, ambientColor = Color.Black, spotColor = Color.White)
                                 .clip(CircleShape)
                         ){
-                            Text(String.format(Locale.US,"%.1f",movieData.rating),modifier=Modifier)
+                            Text(String.format(Locale.US,"%.1f",movieData.rating),modifier=Modifier.padding(2.dp))
                         }
                     }
                     Row(

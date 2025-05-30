@@ -4,6 +4,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,10 +26,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Clear
@@ -87,6 +98,7 @@ fun DiscoverScreen(
     toBookMarked: () -> Unit
 ){
     var animate by remember { mutableStateOf(true) }
+    var isShowSearchOnly by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.background(Color.White),
@@ -139,34 +151,48 @@ fun DiscoverScreen(
                 } )
             )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 8.dp)
+        AnimatedVisibility(
+            visible = animate,
+            enter = fadeIn(spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioHighBouncy)) + slideInHorizontally(),
+            exit = fadeOut(spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioHighBouncy)) + slideOutHorizontally()
         ) {
-            ElevatedFilterChip(
-                selected = discoverScreenState.screenTab.movies,
-                onClick={ onIntent(DiscoverScreenIntents.OnTabClicked(0)) },
-                label = { Text("Movies") }
-            )
-            ElevatedFilterChip(
-                selected = discoverScreenState.screenTab.series,
-                onClick={ onIntent(DiscoverScreenIntents.OnTabClicked(1)) },
-                label = { Text("Series") }
-            )
-            Spacer(Modifier.weight(1f))
-            IconButton(
-                onClick = { toBookMarked() },
-            ) {
-                Icon(imageVector = Icons.Default.Bookmarks, contentDescription = null)
+            if (!isShowSearchOnly){
+                Column{
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        ElevatedFilterChip(
+                            selected = discoverScreenState.screenTab.movies,
+                            onClick={ onIntent(DiscoverScreenIntents.OnTabClicked(0)) },
+                            label = { Text("Movies") }
+                        )
+                        ElevatedFilterChip(
+                            selected = discoverScreenState.screenTab.series,
+                            onClick={ onIntent(DiscoverScreenIntents.OnTabClicked(1)) },
+                            label = { Text("Series") }
+                        )
+                        Spacer(Modifier.weight(1f))
+                        IconButton(
+                            onClick = { toBookMarked() },
+                        ) {
+                            Icon(imageVector = Icons.Default.Bookmarks, contentDescription = null)
+                        }
+                    }
+                    FilterChipRow(filterChipState){ onIntent(it) }
+                }
             }
         }
-        FilterChipRow(filterChipState){ onIntent(it) }
 
         AnimatedContent(
             targetState = discoverScreenState.isMovieTab,
         ) { state ->
-            if (state) Discover(state = discoverScreenState){
+            if (state) Discover(
+                state = discoverScreenState,
+                modifier = modifier,
+                isShowSearchOnly = { isShowSearchOnly=it}
+            ){
                 toMovieDetails(it)
                 onIntent(DiscoverScreenIntents.OnClearClicked) }
             else Box(modifier= Modifier.fillMaxSize()){Text("Works")}
@@ -179,8 +205,12 @@ fun DiscoverScreen(
 fun Discover(
     modifier: Modifier = Modifier,
     state: DiscoverScreenState,
+    isShowSearchOnly:(bool:Boolean)->Unit,
     toMovieDetails: (Movie) -> Unit
 ){
+    val lazyListState = rememberLazyGridState()
+    if (lazyListState.isScrollInProgress){ isShowSearchOnly(true) }
+    else isShowSearchOnly(false)
     Column(
         modifier=modifier
             .fillMaxSize()
@@ -189,6 +219,7 @@ fun Discover(
         LazyVerticalGrid(
             modifier = modifier.fillMaxSize(),
             columns = GridCells.Fixed(2),
+            state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {

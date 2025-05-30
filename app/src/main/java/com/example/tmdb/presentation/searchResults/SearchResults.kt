@@ -234,7 +234,7 @@ fun ActorResult(
 fun MovieResults(
     modifier: Modifier = Modifier,
     movieList: List<Movie>,
-    query: String,
+    query: String="",
     toMovieDetails:(movie:Movie)->Unit
 ) {
     AnimatedVisibility(

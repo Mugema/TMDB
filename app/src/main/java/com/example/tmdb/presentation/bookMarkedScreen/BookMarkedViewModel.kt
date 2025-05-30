@@ -6,7 +6,10 @@ import com.example.tmdb.domain.repository.TMDBRepository
 import com.example.tmdb.presentation.models.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,19 +17,16 @@ import javax.inject.Inject
 class BookMarkedViewModel @Inject constructor(
     private val repository:TMDBRepository
 ):ViewModel() {
-    private var _expanded = MutableStateFlow(false)
-    var expanded= _expanded.asStateFlow()
 
-    private var _bookmarked= MutableStateFlow(listOf<Movie>())
-    val bookmarked=_bookmarked.asStateFlow()
+    private val _bookMarkedScreenState = MutableStateFlow(BookMarkedScreenState())
+    val bookMarkedScreenState = _bookMarkedScreenState.onStart {
+        getBookMarkedMovies()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        BookMarkedScreenState()
 
-    var currentMovie:Movie?=null
-
-
-    fun onExpandedChange(movie: Movie?=null){
-        _expanded.value=!_expanded.value
-        currentMovie=movie
-    }
+    )
 
     fun onDeleteClicked(id:Int){
         viewModelScope.launch {
@@ -34,13 +34,20 @@ class BookMarkedViewModel @Inject constructor(
         }
     }
 
-     fun getMovieData(){
-//        viewModelScope.launch {
-//            _bookmarked.value=repository.getBookMarked().map{item->
-//                item.toMovie()
-//            }
-//
-//        }
+     fun getBookMarkedMovies(){
+         _bookMarkedScreenState.update { it.copy(isLoading = true) }
+         viewModelScope.launch {
+             repository.getBookMarkedMovie().collect { movieList ->
+                 _bookMarkedScreenState.update { it.copy( movieList = movieList ) }
+             }
+         }
+         _bookMarkedScreenState.update { it.copy(isLoading = false) }
+
     }
 
 }
+
+data class BookMarkedScreenState(
+    val movieList:List<Movie> = emptyList<Movie>(),
+    val isLoading: Boolean = true
+)

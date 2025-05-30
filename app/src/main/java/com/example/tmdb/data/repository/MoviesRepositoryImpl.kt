@@ -17,14 +17,12 @@ import com.example.tmdb.domain.Result
 import com.example.tmdb.domain.map
 import com.example.tmdb.domain.repository.MoviesRepository
 import com.example.tmdb.domain.resolveCategory
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MoviesRepositoryImpl @Inject constructor (
     private val localDataSource: MoviesLocalDataSource,
-    private val ioDispatcher: CoroutineDispatcher,
     private val remoteDataSource: MoviesRemoteDataSource
 ): MoviesRepository {
     val tag = "MOVIES_REPOSITORY_IMPL"
@@ -139,5 +137,9 @@ class MoviesRepositoryImpl @Inject constructor (
                 )
             }
         }
+    }
+
+    fun getBookMarked():Flow<List<Movies>>{
+        return localDataSource.getBookMarkedMovies()
     }
 }

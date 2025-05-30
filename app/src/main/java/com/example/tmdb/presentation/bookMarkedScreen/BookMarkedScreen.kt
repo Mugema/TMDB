@@ -1,73 +1,59 @@
 package com.example.tmdb.presentation.bookMarkedScreen
 
-import androidx.compose.foundation.clickable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.tmdb.presentation.bookMarkedScreen.components.WatchItem
-import com.example.tmdb.presentation.discoverScreen.components.Overview
+import com.example.tmdb.presentation.discoverScreen.components.MovieItem
+import com.example.tmdb.presentation.models.Movie
 
 @Composable
-fun WatchLaterScreenRoot(modifier: Modifier = Modifier) {
-    WatchLaterScreen( viewModel = hiltViewModel() )
+fun BookMarkedScreenRoot(
+    modifier: Modifier = Modifier,
+    toMovieDetails: (movie:Movie) -> Unit
+) {
+    val viewModel = hiltViewModel<BookMarkedViewModel>()
 
+    BookMarkedScreen(
+        modifier = modifier,
+        state = viewModel.bookMarkedScreenState.collectAsStateWithLifecycle().value,
+        toMovieDetails = toMovieDetails
+        )
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WatchLaterScreen (viewModel: BookMarkedViewModel) {
-    val expanded = viewModel.expanded.collectAsStateWithLifecycle()
-    val bookmarked=viewModel.bookmarked.collectAsStateWithLifecycle()
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Watch List") },
-                navigationIcon = { Icon(Icons.Filled.ArrowBack, null) },
-                actions = { Icon(Icons.Filled.Settings, null) }
-            )
-        }
-    ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)
-            .also { if (expanded.value) it.blur(5.dp) }
-        ) {
-            if (expanded.value) {
-                item {
-                    Column (
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable { viewModel.onExpandedChange() }
-                    ){
-                        viewModel.currentMovie?.let { Overview(modifier = Modifier, movie = it) }
-                    }
-                }
-            }
-            else{
-                items(bookmarked.value){movie->
-                    WatchItem(movie,viewModel)
-                }
-            }
+fun BookMarkedScreen (
+    modifier: Modifier,
+    state: BookMarkedScreenState,
+    toMovieDetails:(movie:Movie)->Unit
+) {
+    LazyVerticalGrid(
+        modifier = modifier
+            .padding(start = 8.dp, end = 8.dp),
+        columns = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        contentPadding = PaddingValues(top = WindowInsets.navigationBars.asPaddingValues().calculateTopPadding()+100.dp)
+    ) {
+        items(state.movieList){ movie ->
+            MovieItem(modifier=modifier ,movie =  movie){ toMovieDetails(it) }
+            Log.d("SearchResults","The movie passed the the Movie item $movie")
         }
     }
 }
-

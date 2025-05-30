@@ -19,5 +19,7 @@ interface TMDBRepository {
 
     suspend fun searchActor(query:String): Result<List<Actor>, DataErrors>
 
+    fun getBookMarkedMovie(): Flow<List<Movie>>
+
 //    suspend fun searchSeries():Flow
 }

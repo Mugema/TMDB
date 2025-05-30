@@ -29,6 +29,9 @@ interface MoviesDao {
     @Query("Select * from MoviesEntity")
     suspend fun checkTable():List<MoviesEntity>
 
+    @Query("Select * from MoviesEntity where bookMark = 1")
+    fun getBookMarkedMovies(): Flow<List<MoviesEntity>>
+
     @Query("Select * from MoviesEntity where title Like '%' || :query || '%' or originalTitle Like '%' || :query || '%' ")
     suspend fun searchBasedOnTitle(query:String): List<MoviesEntity>
 }
