@@ -1,5 +1,6 @@
 package com.example.tmdb.data.remote
 
+import com.example.tmdb.BuildConfig
 import com.example.tmdb.data.remote.models.ActorDto
 import com.example.tmdb.data.remote.models.MoviesDto
 import com.example.tmdb.domain.Category
@@ -9,7 +10,7 @@ import com.example.tmdb.domain.Result
 interface ApiService{
 
     companion object {
-         const val API_KEY="a2f76f3a9afec8527beb8f1495660ad4"
+         const val API_KEY= BuildConfig.ApiKey
          const val BASE_URL = "https://api.themoviedb.org"
 
         const val NOW_PLAYING = "/3/movie/now_playing"
